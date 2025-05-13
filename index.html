@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e2e;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #292941;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #ffcc00;
+    }
+
+    .schedule {
+      margin-bottom: 20px;
+    }
+
+    .block {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      background-color: #3b3b5b;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #3b3b5b;
+      border-radius: 5px;
+    }
+
+    .status-block {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .dot {
+      width: 15px;
+      height: 15px;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.orange {
+      background-color: orange;
+    }
+
+    .dot.green {
+      background-color: green;
+    }
+
+    .dot.red {
+      background-color: red;
+    }
+
+    .timer, .transition-timer, .next-transition-timer {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 1.2rem;
+    }
+
+    .restroom-status {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 1.2rem;
+    }
+
+    .restroom-status.unavailable {
+      color: red;
+    }
+
+    .restroom-status.available {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>6th Grade Schedule</h1>
+    <div class="schedule" id="schedule"></div>
+    <div class="status" id="status">
+      <h2>Status</h2>
+      <div id="status-blocks"></div>
+    </div>
+    <div class="timer" id="timer-display">
+      Time Left in Current Block: <span id="time-left">N/A</span>
+    </div>
+    <div class="transition-timer" id="transition-timer">
+      Transition Time: <span id="transition-time">N/A</span>
+    </div>
+    <div class="next-transition-timer" id="next-transition-timer">
+      Next Transition Time: <span id="next-transition-time">N/A</span>
+    </div>
+    <div class="restroom-status" id="restroom-status">
+      Restroom: Unavailable
+    </div>
+  </div>
+
+  <script>
+    const schedule = [
+      { name: "Homeroom", start: "9:15", end: "9:56" },
+      { name: "2nd Block", start: "9:58", end: "10:58" },
+      { name: "3rd Block", start: "11:01", end: "11:56" },
+      { name: "Lunch & HAC", start: "12:04", end: "13:04" },
+      { name: "4th Block", start: "13:07", end: "14:07" },
+      { name: "5th Block", start: "14:10", end: "15:10" },
+      { name: "Electives", start: "15:13", end: "16:13" },
+      { name: "Dismissal", start: "16:13", end: "17:00" },
+    ];
+
+    const scheduleDiv = document.getElementById("schedule");
+    const statusDiv = document.getElementById("status-blocks");
+    const timerDisplay = document.getElementById("time-left");
+    const transitionDisplay = document.getElementById("transition-time");
+    const nextTransitionDisplay = document.getElementById("next-transition-time");
+    const restroomStatusDisplay = document.getElementById("restroom-status");
+
+    // Helper function to convert time to total seconds since midnight
+    const timeToSeconds = (time) => {
+      const [hours, minutes] = time.split(":").map(Number);
+      return hours * 3600 + minutes * 60;
+    };
+
+    // Populate the schedule
+    schedule.forEach((block) => {
+      const blockDiv = document.createElement("div");
+      blockDiv.classList.add("block");
+      blockDiv.innerHTML = `
+        <span>${block.name} (${block.start} - ${block.end})</span>
+      `;
+      scheduleDiv.appendChild(blockDiv);
+    });
+
+    // Timer and status logic
+    const updateTimersAndStatus = () => {
+      const now = new Date();
+      const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      let currentBlock = null;
+      let timeLeft = null;
+      let transitionTime = null;
+      let nextTransitionDuration = null;
+
+      // Clear status div
+      statusDiv.innerHTML = "";
+
+      schedule.forEach((block, index) => {
+        const start = timeToSeconds(block.start);
+        const end = timeToSeconds(block.end);
+
+        const statusItem = document.createElement("div");
+        statusItem.classList.add("status-block");
+
+        if (currentSeconds >= start && currentSeconds < end) {
+          // Current block
+          currentBlock = block;
+          timeLeft = end - currentSeconds;
+          statusItem.innerHTML = `<span class="dot green"></span>${block.name}`;
+        } else if (currentSeconds >= end) {
+          // Attended block
+          statusItem.innerHTML = `<span class="dot red"></span>${block.name}`;
+        } else {
+          // Not yet attended block
+          statusItem.innerHTML = `<span class="dot orange"></span>${block.name}`;
+        }
+
+        statusDiv.appendChild(statusItem);
+
+        // Transition times
+        if (currentSeconds >= end && index < schedule.length - 1) {
+          const nextBlock = schedule[index + 1];
+          const nextStart = timeToSeconds(nextBlock.start);
+          transitionTime = nextStart - currentSeconds;
+          nextTransitionDuration = nextStart - end;
+        }
+      });
+
+      // Update timers
+      timerDisplay.textContent = currentBlock
+        ? `${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`
+        : "N/A";
+
+      transitionDisplay.textContent = transitionTime
+        ? `${Math.floor(transitionTime / 60)}m ${transitionTime % 60}s`
+        : "No active transition";
+
+      nextTransitionDisplay.textContent = nextTransitionDuration
+        ? `${Math.floor(nextTransitionDuration / 60)}m ${nextTransitionDuration % 60}s`
+        : "No more transitions today";
+
+      // Update restroom status
+      if (currentBlock) {
+        const blockDuration = timeToSeconds(currentBlock.end) - timeToSeconds(currentBlock.start);
+        const timeSinceStart = blockDuration - timeLeft;
+        const timeUntilEnd = timeLeft;
+
+        if (timeSinceStart < 600 || timeUntilEnd < 600) {
+          restroomStatusDisplay.textContent = "Restroom: Unavailable";
+          restroomStatusDisplay.className = "restroom-status unavailable";
+        } else {
+          restroomStatusDisplay.textContent = "Restroom: Available";
+          restroomStatusDisplay.className = "restroom-status available";
+        }
+      }
+
+      // Update the tab title
+      if (currentBlock) {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.title = `${currentBlock.name} - ${minutes}m ${seconds}s remaining`;
+      } else {
+        document.title = "Schedule";
+      }
+    };
+
+    setInterval(updateTimersAndStatus, 1000);
+    updateTimersAndStatus();
+  </script>
+</body>
+</html>
