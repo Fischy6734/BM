@@ -6,45 +6,46 @@
   <title>Schedule</title>
   <style>
     :root {
-      --primary-bg: #232347;
-      --secondary-bg: #36366b;
-      --accent: #ffcc00;
-      --block-bg: #26264a;
-      --dot-green: #34d399;
-      --dot-orange: #fbbf24;
-      --dot-red: #ef4444;
-      --focus: #fffbe7;
-      --progress-bar: #ffcc00;
-      --block-progress-bg: #3b3b5b;
-      --block-progress-fill: #34d399;
-      --rainbow: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      --fancy-glow: 0 0 8px 2px #ffcc00, 0 0 16px 4px #23234777;
+      --primary-bg: #20242a;
+      --secondary-bg: #252a33;
+      --accent: #2b8af7;
+      --block-bg: #23272e;
+      --dot-green: #41c65b;
+      --dot-orange: #f5a623;
+      --dot-red: #f44336;
+      --focus: #e3e3e3;
+      --progress-bar: #2b8af7;
+      --block-progress-bg: #2c3139;
+      --block-progress-fill: #41c65b;
+      --rainbow: none;
+      --fancy-glow: none;
     }
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(120deg, #1e1e2e 60%, #232347 100%);
-      color: #f4f4f4;
+      font-family: system-ui, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(120deg, #191c22 60%, #23272e 100%);
+      color: #e3e3e3;
       margin: 0;
       padding: 0;
       transition: background 0.4s, color 0.4s;
     }
     body.light {
-      background: linear-gradient(120deg, #f9f9f9 60%, #e5e9ff 100%);
-      color: #232347;
+      background: #f5f7fa;
+      color: #23272e;
     }
     .container {
       max-width: 700px;
       margin: 30px auto;
       padding: 28px 22px 18px 22px;
       background: var(--primary-bg);
-      border-radius: 18px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px 0 rgba(20,24,32,0.27);
       position: relative;
       transition: background 0.4s;
     }
     body.light .container {
       background: #fff;
-      color: #232347;
+      color: #23272e;
+      box-shadow: 0 2px 12px 0 #e5e8ec;
     }
     .theme-switcher {
       position: absolute;
@@ -58,12 +59,12 @@
       font-size: 1em;
       cursor: pointer;
       font-weight: 600;
-      box-shadow: 0 2px 4px #0002;
+      box-shadow: none;
       transition: background 0.3s, color 0.3s;
     }
     body.light .theme-switcher {
-      background: #f1f1ff;
-      color: #232347;
+      background: #e9ecf3;
+      color: #222;
     }
     h1 {
       text-align: center;
@@ -71,38 +72,32 @@
       font-size: 2.6rem;
       color: var(--accent);
       letter-spacing: 2px;
-      text-shadow: 0 2px 4px #13131f;
+      text-shadow: none;
       font-weight: 700;
-      animation: rainbowtext 4s linear infinite;
-      background: var(--rainbow);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    @keyframes rainbowtext {
-      to {
-        filter: hue-rotate(360deg);
-      }
+      background: none;
+      -webkit-background-clip: unset;
+      -webkit-text-fill-color: unset;
+      background-clip: unset;
     }
     .progress-bar-container {
       width: 100%;
-      background: #40405a;
+      background: #242a33;
       height: 14px;
       border-radius: 7px;
       margin-bottom: 18px;
       overflow: hidden;
       position: relative;
-      box-shadow: var(--fancy-glow);
+      box-shadow: none;
     }
     body.light .progress-bar-container {
-      background: #e0e3ff;
+      background: #e0e3ee;
     }
     .progress-bar {
       height: 100%;
       background: var(--progress-bar);
       width: 0%;
       transition: width 0.7s cubic-bezier(.44,2,.28,1);
-      box-shadow: var(--fancy-glow);
+      box-shadow: none;
     }
     .encouragement {
       text-align: center;
@@ -114,13 +109,9 @@
       letter-spacing: 1px;
       transition: color 0.2s;
       user-select: none;
-      text-shadow: 0 0 10px #ffcc00, 0 0 2px #fff;
-      animation: encouragementpop 1.8s infinite alternate;
-    }
-    @keyframes encouragementpop {
-      0% { filter: brightness(1); }
-      60% { filter: brightness(1.2) drop-shadow(0 3px 8px #ffd700bb);}
-      100% { filter: brightness(1); }
+      text-shadow: none;
+      animation: none;
+      opacity: 0.92;
     }
     .schedule-header {
       position: sticky;
@@ -129,6 +120,10 @@
       background: inherit;
       padding: 12px 0 8px 0;
       font-size: 1.13rem;
+      color: #7fa9ce;
+      font-weight: 600;
+      border-bottom: 1px solid #2d343e;
+      margin-bottom: 8px;
     }
     .schedule {
       margin-bottom: 25px;
@@ -140,82 +135,87 @@
       margin-bottom: 14px;
       background: var(--block-bg);
       padding: 14px 18px;
-      border-radius: 10px;
-      box-shadow: 0 1px 4px #0002;
+      border-radius: 9px;
+      box-shadow: 0 1px 4px #0001;
       font-size: 1.16rem;
       transition: background 0.2s;
       position: relative;
-      border-left: 7px solid transparent;
+      border-left: 5px solid transparent;
+      border-bottom: 1px solid #23272e;
     }
     body.light .block {
-      background: #e5e9ff;
+      background: #f6f8fa;
+      border-bottom: 1px solid #e2e5f1;
     }
     .block:hover, .block:focus-within {
       background: var(--secondary-bg);
-      border-left: 7px solid var(--accent);
-      box-shadow: var(--fancy-glow);
+      border-left: 5px solid var(--accent);
+      box-shadow: 0 3px 12px #2b8af711;
       z-index: 2;
     }
     body.light .block:hover, body.light .block:focus-within {
-      background: #c3c8f6;
+      background: #e3e8ee;
     }
     .block-time {
       font-size: 1.05em;
-      color: #ffe066;
+      color: #7fa9ce;
       margin-left: 7px;
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: system-ui, 'Segoe UI', Arial, sans-serif;
       letter-spacing: 1px;
       font-weight: 600;
     }
     .notes-btn {
       background: var(--accent);
-      color: #232347;
+      color: #fff;
       border: none;
-      border-radius: 5px;
+      border-radius: 4px;
       font-size: 0.97em;
       padding: 3px 10px;
       margin-left: 12px;
       cursor: pointer;
       font-weight: 600;
       transition: background 0.2s;
-      box-shadow: 0 0 4px #ffcc0070;
+      box-shadow: none;
     }
     .notes-btn:hover {
-      background: #ffe066;
-      box-shadow: 0 0 8px #ffcc00b0;
+      background: #1664bb;
+      color: #fff;
     }
     .notes-modal-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(30,30,60,0.4);
+      background: rgba(26,28,32,0.50);
       z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .notes-modal {
-      background: #fff;
-      color: #232347;
+      background: #22262c;
+      color: #e3e3e3;
       border-radius: 12px;
       padding: 25px 24px 18px 24px;
       min-width: 300px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.28);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.16);
       max-width: 90vw;
+      border: 2px solid #232a30;
     }
     .notes-modal h2 {
       margin: 0 0 14px 0;
       font-size: 1.2rem;
-      color: #232347;
+      color: var(--accent);
     }
     .notes-modal textarea {
       width: 100%;
       min-height: 60px;
       border-radius: 6px;
-      border: 1px solid #b8b8e0;
+      border: 1px solid #475065;
       font-size: 1.05em;
       padding: 7px;
       margin-bottom: 12px;
       resize: vertical;
+      background: #23272e;
+      color: #e3e3e3;
     }
     .notes-modal .close-notes {
       background: #f44336;
@@ -229,7 +229,7 @@
       font-weight: 600;
     }
     .notes-modal .save-notes {
-      background: #34d399;
+      background: #41c65b;
       color: #fff;
       border: none;
       border-radius: 5px;
@@ -241,7 +241,7 @@
     .notes-indicator {
       margin-left: 7px;
       font-size: 1.05em;
-      color: #34d399;
+      color: #41c65b;
       vertical-align: middle;
     }
     .status {
@@ -249,17 +249,19 @@
       padding: 10px;
       background: var(--block-bg);
       border-radius: 8px;
-      box-shadow: 0 1px 3px #0002;
+      box-shadow: 0 1px 3px #0001;
       position: relative;
       z-index: 1;
     }
     body.light .status {
-      background: #e5e9ff;
+      background: #f6f8fa;
     }
     .status h2 {
       font-size: 1.25rem;
       color: var(--accent);
       margin: 0 0 12px 0;
+      border-bottom: 1px solid #2d343e;
+      padding-bottom: 4px;
     }
     .status-block {
       display: flex;
@@ -280,14 +282,14 @@
       border: 2px solid transparent;
     }
     .dot.green {
-      background: #34d399;
+      background: var(--dot-green);
     }
     .dot.orange {
-      background: #fbbf24;
+      background: var(--dot-orange);
       cursor: pointer;
     }
     .dot.red {
-      background: #ef4444;
+      background: var(--dot-red);
     }
     .dot:focus, .dot:hover {
       outline: 2px solid var(--focus);
@@ -297,8 +299,8 @@
       display: block;
       position: absolute;
       left: 34px;
-      background: #22244a;
-      color: #fff;
+      background: #11141a;
+      color: #e3e3e3;
       font-size: 0.94rem;
       padding: 3px 12px;
       border-radius: 5px;
@@ -310,6 +312,7 @@
       pointer-events: none;
       opacity: 0.98;
       animation: fadein 0.13s;
+      border: 1px solid #313b4c;
     }
     @keyframes fadein {
       from { opacity: 0; }
@@ -334,7 +337,7 @@
       overflow: hidden;
       position: relative;
       margin-top: 4px;
-      box-shadow: 0 1px 6px #0002;
+      box-shadow: 0 1px 6px #0001;
     }
     .current-block-progress-bar-fill {
       background: var(--block-progress-fill);
@@ -354,17 +357,17 @@
       border-top: 2px dashed var(--accent);
       border-radius: 7px;
       margin-top: 16px;
-      background: #23234733;
+      background: #232a33;
     }
     .status-extra {
       flex: 1 1 150px;
       min-width: 140px;
       margin: 0;
-      background: #36366b;
-      color: #ffcc00;
+      background: #262b35;
+      color: var(--accent);
       border-radius: 8px;
       padding: 10px 9px 7px 12px;
-      box-shadow: 0 1px 7px #0002;
+      box-shadow: 0 1px 7px #0001;
       font-size: 1.04em;
       position: relative;
       text-align: left;
@@ -377,23 +380,23 @@
     .status-extra.block-time-left {
       flex: 2 1 320px;
       font-size: 1.3em;
-      background: #19194e;
-      color: #ffcc00;
+      background: #212a36;
+      color: var(--accent);
       text-align: center;
       align-items: center;
       justify-content: center;
       min-width: 200px;
       min-height: 65px;
-      box-shadow: 0 3px 18px #0005;
+      box-shadow: 0 3px 18px #0002;
       letter-spacing: 1.1px;
     }
     body.light .status-extra.block-time-left {
-      background: #ffe066;
-      color: #232347;
+      background: #eaf3fc;
+      color: #2b8af7;
     }
     body.light .status-extra {
-      background: #e5e9ff;
-      color: #232347;
+      background: #eef4fb;
+      color: #2b8af7;
     }
     .status-extra .extra-title {
       font-size: 0.97em;
@@ -403,7 +406,7 @@
       letter-spacing: 0.5px;
     }
     .status-extra strong {
-      color: #fffbe7;
+      color: #e3e3e3;
       font-size: 1.13em;
     }
     .status-extra .emoji {
@@ -413,7 +416,7 @@
     }
     .status-extra .copy-btn {
       background: var(--accent);
-      color: #232347;
+      color: #fff;
       border: none;
       border-radius: 6px;
       font-size: 0.83em;
@@ -425,10 +428,10 @@
       transition: background 0.14s;
     }
     .status-extra .copy-btn:hover {
-      background: #ffe066;
+      background: #1664bb;
     }
     .status-extra .copied-msg {
-      color: #34d399;
+      color: #41c65b;
       font-size: 0.86em;
       margin-left: 3px;
       font-style: italic;
@@ -437,9 +440,9 @@
       margin-top: 2px;
       font-size: 1em;
       border-radius: 5px;
-      border: 1px solid #b8b8e0;
-      background: #fffbe7;
-      color: #232347;
+      border: 1px solid #475065;
+      background: #23272e;
+      color: #e3e3e3;
       padding: 1px 4px;
     }
     .status-extra .block-picker:focus {
@@ -448,7 +451,7 @@
     .status-extra .time {
       font-size: 1.02em;
       font-weight: 700;
-      color: #ffcc00;
+      color: var(--accent);
       margin-top: 2px;
     }
     @media (max-width: 700px) {
@@ -456,23 +459,21 @@
       .status-extra, .status-extra.block-time-left { min-width: 80px; }
     }
     .fun-border {
-      border: 3px dashed #ffcc00;
+      border: 2px dashed #2b8af7;
       padding: 3px;
-      border-radius: 15px;
+      border-radius: 13px;
       margin: 12px 0;
-      background: #36366b22;
-      animation: funborder 2.5s infinite linear;
-    }
-    @keyframes funborder {
-      to { filter: hue-rotate(360deg);}
+      background: #20242a;
+      animation: none;
     }
     .mood-bar {
       margin: 20px 0 0 0;
       text-align: center;
       background: var(--block-bg);
       border-radius: 11px;
-      box-shadow: 0 2px 10px #0003;
+      box-shadow: 0 2px 10px #0002;
       padding: 12px 0 11px 0;
+      border: 1px solid #262a31;
     }
     .mood-bar label {
       margin-right: 9px;
@@ -490,13 +491,13 @@
       outline: none;
     }
     .mood-btn.selected, .mood-btn:focus {
-      transform: scale(1.23);
-      filter: brightness(1.3);
+      transform: scale(1.18);
+      filter: brightness(1.25);
     }
     .mood-history {
       margin: 9px 0 0 0;
       font-size: 0.97em;
-      color: #ffcc00;
+      color: var(--accent);
       font-weight: 500;
       min-height: 1.6em;
     }
@@ -509,26 +510,26 @@
       font-weight: 700;
       letter-spacing: 1px;
       transition: background 0.2s, color 0.2s;
-      background: #232347;
-      color: #ffcc00;
-      border: 2px solid #ffe066;
+      background: #232a33;
+      color: #2b8af7;
+      border: 2px solid #2b8af7;
       max-width: 400px;
       margin-left: auto;
       margin-right: auto;
-      box-shadow: 0 1px 7px #0003;
+      box-shadow: 0 1px 7px #0002;
       position: relative;
     }
     .restroom-status.unavailable {
-      color: #fff0f0;
-      background: #b91c1c33;
-      border-color: #fbbf24;
-      text-shadow: 0 0 6px #9008;
+      color: #f44336;
+      background: #2a1c1c;
+      border-color: #f44336;
+      text-shadow: none;
     }
     .restroom-status.available {
-      color: #166534;
-      background: #eaffea;
-      border-color: #34d399;
-      text-shadow: 0 0 6px #16653444;
+      color: #41c65b;
+      background: #1c2a1c;
+      border-color: #41c65b;
+      text-shadow: none;
     }
     .confetti-piece {
       position: fixed;
@@ -536,7 +537,7 @@
       width: 12px;
       height: 12px;
       border-radius: 3px;
-      opacity: 0.8;
+      opacity: 0.7;
       pointer-events: none;
       z-index: 9999;
       animation: confetti-fall 2.5s linear forwards;
@@ -546,6 +547,68 @@
         transform: translateY(92vh) rotate(360deg);
         opacity: 0.25;
       }
+    }
+    /* Weather HAC styles */
+    .weather-hac {
+      margin: 18px 0 0 0;
+      background: #232a33;
+      border: 2px solid #2b8af7;
+      border-radius: 10px;
+      padding: 13px 15px 12px 15px;
+      color: #2b8af7;
+      font-size: 1.13em;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 1px;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 1px 6px #0002;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .weather-hac.weather-ok {
+      background: #203024;
+      color: #41c65b;
+      border-color: #41c65b;
+      text-shadow: none;
+    }
+    .weather-hac.weather-rain {
+      background: #2a1c1c;
+      color: #f44336;
+      border-color: #f44336;
+      text-shadow: none;
+    }
+    .weather-hac .weather-hac-status {
+      font-size: 1.14em;
+      font-weight: 800;
+      margin-top: 1px;
+    }
+    .weather-hac .weather-hac-detail {
+      font-size: 0.98em;
+      font-weight: 500;
+      color: #7fa9ce;
+      margin-top: 3px;
+    }
+    .weather-hac .weather-hac-btn {
+      background: #232a33;
+      color: #2b8af7;
+      border: 1.5px solid #2b8af7;
+      border-radius: 7px;
+      font-size: 0.98em;
+      padding: 3px 11px;
+      margin-top: 4px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.17s, color 0.17s;
+    }
+    .weather-hac .weather-hac-btn:hover {
+      background: #2b8af7;
+      color: #fff;
+      border-color: #2b8af7;
     }
   </style>
 </head>
@@ -574,6 +637,12 @@
     <div class="restroom-status" id="restroom-status">
       Restroom: Unavailable
     </div>
+    <!-- WEATHER HAC WIDGET, ADDED -->
+    <div class="weather-hac" id="weather-hac">
+      <span class="weather-hac-status">Checking weather for HAC...</span>
+      <span class="weather-hac-detail"></span>
+      <button class="weather-hac-btn" id="weather-hac-refresh" style="display:none;">↻ Refresh</button>
+    </div>
     <div class="fun-border">
       <div class="mood-bar">
         <label>How are you feeling? </label>
@@ -595,7 +664,7 @@
     </div>
   </div>
   <script>
-    // --- ALL LINES AND FEATURES KEPT, ONLY JUMP TO BLOCK REMOVED ---
+    // ... all your JS ...
     const schedule = [
       { name: "Homeroom", start: "9:15", end: "9:56" },
       { name: "2nd Block", start: "9:58", end: "10:58" },
@@ -939,6 +1008,136 @@
       });
       showMoodHistory();
     })();
+
+    // WEATHER HAC (Open-Meteo API, SMARTER HAC LOGIC)
+    const WEATHER_LAT = 40.7128; // Set to your real location!
+    const WEATHER_LON = -74.0060;
+    const HAC_BLOCK = schedule.find(b => b.name.toLowerCase().includes("hac")) || { start: "12:04", end: "13:04" };
+    function pad(n){ return n < 10 ? '0'+n : n; }
+    function getTodayDateStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+    function getHacHourMinutes() {
+      let [starth, startm] = HAC_BLOCK.start.split(':').map(Number);
+      let [endh, endm] = HAC_BLOCK.end.split(':').map(Number);
+      return {starth, startm, endh, endm};
+    }
+    async function fetchWeatherHAC() {
+      const weatherBox = document.getElementById("weather-hac");
+      const status = weatherBox.querySelector(".weather-hac-status");
+      const detail = weatherBox.querySelector(".weather-hac-detail");
+      const btn = weatherBox.querySelector(".weather-hac-btn");
+      weatherBox.className = "weather-hac";
+      status.textContent = "Checking weather for HAC...";
+      detail.textContent = "";
+      btn.style.display = "none";
+      try {
+        const params =
+          `latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}` +
+          `&hourly=precipitation_probability,precipitation` +
+          `&daily=precipitation_sum,precipitation_hours` +
+          `&forecast_days=1&timezone=auto`;
+        const resp = await fetch("https://api.open-meteo.com/v1/forecast?" + params);
+        const data = await resp.json();
+
+        const {starth, startm, endh, endm} = getHacHourMinutes();
+
+        // Find hourly forecast for HAC, for 1hr before, and for 1hr after
+        let rainToday = false;
+        let rainDuringHac = false;
+        let rainBeforeHac = false;
+        let rainAfterHac = false;
+        let hacHours = [];
+        let beforeHacHours = [];
+        let afterHacHours = [];
+
+        for(let i=0; i<data.hourly.time.length; ++i) {
+          const t = new Date(data.hourly.time[i]);
+          const hour = t.getHours();
+          const min = t.getMinutes();
+          // Rain at any hour today?
+          if(data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05) {
+            rainToday = true;
+          }
+
+          // Is this hour before HAC but within 1 hour?
+          let before =
+            (hour === starth && min < startm) ||
+            (hour === starth-1) ||
+            (hour === starth-2 && startm<15); // if HAC is near :00, include prev-2h if close to the hour
+
+          // Is this hour after HAC but within 1 hour?
+          let after =
+            (hour === endh && min > endm) ||
+            (hour === endh+1) ||
+            (hour === endh+2 && endm>45); // if HAC ends near :59 include next+2h
+
+          // During HAC?
+          const inHac = (
+            (hour > starth || (hour === starth && min >= startm)) &&
+            (hour < endh || (hour === endh && min <= endm))
+          );
+
+          // Rain checks
+          if (inHac) {
+            hacHours.push({prob:data.hourly.precipitation_probability[i], amt:data.hourly.precipitation[i]});
+            if(data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05) {
+              rainDuringHac = true;
+            }
+          }
+          if (before) {
+            beforeHacHours.push({prob:data.hourly.precipitation_probability[i], amt:data.hourly.precipitation[i], hour, min});
+            if(data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05) {
+              rainBeforeHac = true;
+            }
+          }
+          if (after) {
+            afterHacHours.push({prob:data.hourly.precipitation_probability[i], amt:data.hourly.precipitation[i], hour, min});
+            if(data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05) {
+              rainAfterHac = true;
+            }
+          }
+        }
+
+        // Display logic
+        if (rainDuringHac) {
+          weatherBox.classList.add("weather-rain");
+          status.textContent = "Rain expected during HAC 😕";
+          let maxProb = Math.max(...hacHours.map(x=>x.prob));
+          detail.textContent = `Rain chance during HAC: ${maxProb}%`;
+        } else if (rainBeforeHac) {
+          weatherBox.classList.add("weather-rain");
+          status.textContent = "HAC inside today";
+          let max = Math.max(...beforeHacHours.map(x=>x.prob));
+          detail.textContent = `Rain is very close to HAC (chance: ${max}%)`;
+        } else if (rainAfterHac) {
+          weatherBox.classList.add("weather-ok");
+          status.textContent = "You have outside HAC today (rain after HAC)";
+          let max = Math.max(...afterHacHours.map(x=>x.prob));
+          detail.textContent = `Rain expected after HAC (chance: ${max}%)`;
+        } else if (!rainToday && !rainDuringHac && !rainBeforeHac && !rainAfterHac) {
+          weatherBox.classList.add("weather-ok");
+          status.textContent = "You can go outside for HAC!";
+          detail.textContent = "No rain expected today. Have fun!";
+        } else if(rainToday) {
+          weatherBox.classList.add("weather-ok");
+          status.textContent = "No rain during HAC!";
+          detail.textContent = "It might rain at some other time today, but not during HAC.";
+        } else {
+          weatherBox.classList.add("weather-ok");
+          status.textContent = "Weather data unavailable.";
+        }
+        btn.style.display = "";
+      } catch(e) {
+        weatherBox.classList.add("weather-rain");
+        status.textContent = "Weather check failed.";
+        detail.textContent = e && e.message ? e.message : e;
+        btn.style.display = "";
+      }
+    }
+    document.getElementById("weather-hac-refresh").onclick = fetchWeatherHAC;
+    fetchWeatherHAC();
   </script>
 </body>
 </html>
