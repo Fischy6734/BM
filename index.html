@@ -756,6 +756,7 @@
     }
     let lastBlockIndex = -1;
     let time20mConfetti = {};
+    let prevBlockIndex = -1;
     function showEncouragement() {
       const eDiv = document.getElementById('encouragement');
       eDiv.textContent = encouragements[Math.floor(Math.random()*encouragements.length)];
@@ -836,6 +837,7 @@
     const progressBar = document.getElementById("progress-bar");
     const currentBlockProgress = document.getElementById("current-block-progress");
     const currentBlockProgressFill = document.getElementById("current-block-progress-fill");
+    let previousCurrentBlockIndex = -1;
     function updateTimersAndStatus() {
       const now = new Date();
       const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
@@ -882,6 +884,19 @@
         currentBlockProgress.style.display = "none";
         if (currentBlockProgressFill) currentBlockProgressFill.style.width = "0%";
       }
+
+      // --- FIXED CONFETTI: Throw confetti when a block ENDS ---
+      // Track which block was current previously, and which is now.
+      // If the previous block is different and not -1, throw confetti!
+      if (previousCurrentBlockIndex !== -1 && previousCurrentBlockIndex !== currentBlockIndex) {
+        // Only if we switched to a new block or no block
+        throwConfetti(true);
+        showEncouragement();
+        time20mConfetti = {};
+      }
+      previousCurrentBlockIndex = currentBlockIndex;
+
+      // RESTROOM status logic
       if (currentBlock) {
         const blockDuration = blockEnd - blockStart;
         const timeSinceStart = blockDuration - timeLeft;
@@ -899,14 +914,9 @@
           restroomStatusDisplay.className = "restroom-status available";
         }
         document.title = `${currentBlock.name} - ${formatTime(timeLeft)} remaining`;
-        if (lastBlockIndex !== currentBlockIndex) {
-          throwConfetti(true);
-          showEncouragement();
-          lastBlockIndex = currentBlockIndex;
-          time20mConfetti = {};
-        }
+        // 20 minutes confetti (once per block)
         if (blockStart !== null && (currentSeconds - blockStart >= 1200) && !time20mConfetti[currentBlockIndex]) {
-          throwConfetti(false);
+          throwConfetti(false); // small confetti
           time20mConfetti[currentBlockIndex] = true;
         }
       } else {
@@ -1010,8 +1020,9 @@
     })();
 
     // WEATHER HAC (Open-Meteo API, SMARTER HAC LOGIC)
-    const WEATHER_LAT = 40.7128; // Set to your real location!
-    const WEATHER_LON = -74.0060;
+    // Set this to your city/school coordinates!
+    const WEATHER_LAT = 35.39602; // Set to your real location!
+    const WEATHER_LON = -80.92412;
     const HAC_BLOCK = schedule.find(b => b.name.toLowerCase().includes("hac")) || { start: "12:04", end: "13:04" };
     function pad(n){ return n < 10 ? '0'+n : n; }
     function getTodayDateStr() {
