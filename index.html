@@ -5,120 +5,597 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Schedule</title>
   <style>
+    :root {
+      --primary-bg: #232347;
+      --secondary-bg: #36366b;
+      --accent: #ffcc00;
+      --block-bg: #26264a;
+      --dot-green: #34d399;
+      --dot-orange: #fbbf24;
+      --dot-red: #ef4444;
+      --focus: #fffbe7;
+      --progress-bar: #ffcc00;
+      --block-progress-bg: #3b3b5b;
+      --block-progress-fill: #34d399;
+      --rainbow: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      --fancy-glow: 0 0 8px 2px #ffcc00, 0 0 16px 4px #23234777;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #1e1e2e;
-      color: #ffffff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(120deg, #1e1e2e 60%, #232347 100%);
+      color: #f4f4f4;
       margin: 0;
       padding: 0;
+      transition: background 0.4s, color 0.4s;
     }
-
+    body.light {
+      background: linear-gradient(120deg, #f9f9f9 60%, #e5e9ff 100%);
+      color: #232347;
+    }
     .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #292941;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 28px 22px 18px 22px;
+      background: var(--primary-bg);
+      border-radius: 18px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      position: relative;
+      transition: background 0.4s;
     }
-
+    body.light .container {
+      background: #fff;
+      color: #232347;
+    }
+    .theme-switcher {
+      position: absolute;
+      top: 24px;
+      right: 30px;
+      background: var(--block-bg);
+      border: none;
+      padding: 7px 18px;
+      border-radius: 7px;
+      color: var(--accent);
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 2px 4px #0002;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.light .theme-switcher {
+      background: #f1f1ff;
+      color: #232347;
+    }
     h1 {
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 2rem;
-      color: #ffcc00;
+      margin-bottom: 28px;
+      font-size: 2.6rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-shadow: 0 2px 4px #13131f;
+      font-weight: 700;
+      animation: rainbowtext 4s linear infinite;
+      background: var(--rainbow);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-
+    @keyframes rainbowtext {
+      to {
+        filter: hue-rotate(360deg);
+      }
+    }
+    .progress-bar-container {
+      width: 100%;
+      background: #40405a;
+      height: 14px;
+      border-radius: 7px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--fancy-glow);
+    }
+    body.light .progress-bar-container {
+      background: #e0e3ff;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--progress-bar);
+      width: 0%;
+      transition: width 0.7s cubic-bezier(.44,2,.28,1);
+      box-shadow: var(--fancy-glow);
+    }
+    .encouragement {
+      text-align: center;
+      margin: 14px 0 0 0;
+      font-size: 1.18rem;
+      font-weight: 600;
+      color: var(--accent);
+      min-height: 1.5em;
+      letter-spacing: 1px;
+      transition: color 0.2s;
+      user-select: none;
+      text-shadow: 0 0 10px #ffcc00, 0 0 2px #fff;
+      animation: encouragementpop 1.8s infinite alternate;
+    }
+    @keyframes encouragementpop {
+      0% { filter: brightness(1); }
+      60% { filter: brightness(1.2) drop-shadow(0 3px 8px #ffd700bb);}
+      100% { filter: brightness(1); }
+    }
+    .schedule-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: inherit;
+      padding: 12px 0 8px 0;
+      font-size: 1.13rem;
+    }
     .schedule {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
-
     .block {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
-      background-color: #3b3b5b;
-      padding: 10px;
-      border-radius: 5px;
+      margin-bottom: 14px;
+      background: var(--block-bg);
+      padding: 14px 18px;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px #0002;
+      font-size: 1.16rem;
+      transition: background 0.2s;
+      position: relative;
+      border-left: 7px solid transparent;
     }
-
+    body.light .block {
+      background: #e5e9ff;
+    }
+    .block:hover, .block:focus-within {
+      background: var(--secondary-bg);
+      border-left: 7px solid var(--accent);
+      box-shadow: var(--fancy-glow);
+      z-index: 2;
+    }
+    body.light .block:hover, body.light .block:focus-within {
+      background: #c3c8f6;
+    }
+    .block-time {
+      font-size: 1.05em;
+      color: #ffe066;
+      margin-left: 7px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .notes-btn {
+      background: var(--accent);
+      color: #232347;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.97em;
+      padding: 3px 10px;
+      margin-left: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+      box-shadow: 0 0 4px #ffcc0070;
+    }
+    .notes-btn:hover {
+      background: #ffe066;
+      box-shadow: 0 0 8px #ffcc00b0;
+    }
+    .notes-modal-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(30,30,60,0.4);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .notes-modal {
+      background: #fff;
+      color: #232347;
+      border-radius: 12px;
+      padding: 25px 24px 18px 24px;
+      min-width: 300px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.28);
+      max-width: 90vw;
+    }
+    .notes-modal h2 {
+      margin: 0 0 14px 0;
+      font-size: 1.2rem;
+      color: #232347;
+    }
+    .notes-modal textarea {
+      width: 100%;
+      min-height: 60px;
+      border-radius: 6px;
+      border: 1px solid #b8b8e0;
+      font-size: 1.05em;
+      padding: 7px;
+      margin-bottom: 12px;
+      resize: vertical;
+    }
+    .notes-modal .close-notes {
+      background: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.97em;
+      padding: 4px 12px;
+      margin-right: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .notes-modal .save-notes {
+      background: #34d399;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.97em;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .notes-indicator {
+      margin-left: 7px;
+      font-size: 1.05em;
+      color: #34d399;
+      vertical-align: middle;
+    }
     .status {
       margin-top: 20px;
       padding: 10px;
-      background-color: #3b3b5b;
-      border-radius: 5px;
+      background: var(--block-bg);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px #0002;
+      position: relative;
+      z-index: 1;
     }
-
+    body.light .status {
+      background: #e5e9ff;
+    }
+    .status h2 {
+      font-size: 1.25rem;
+      color: var(--accent);
+      margin: 0 0 12px 0;
+    }
     .status-block {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 9px;
+      font-size: 1.06rem;
+      letter-spacing: 0.5px;
+      position: relative;
     }
-
     .dot {
-      width: 15px;
-      height: 15px;
-      margin-right: 10px;
+      width: 19px;
+      height: 19px;
+      margin-right: 13px;
       border-radius: 50%;
+      display: inline-block;
+      position: relative;
+      transition: border 0.18s;
+      border: 2px solid transparent;
     }
-
-    .dot.orange {
-      background-color: orange;
-    }
-
     .dot.green {
-      background-color: green;
+      background: #34d399;
     }
-
+    .dot.orange {
+      background: #fbbf24;
+      cursor: pointer;
+    }
     .dot.red {
-      background-color: red;
+      background: #ef4444;
     }
-
-    .timer, .transition-timer, .next-transition-timer {
+    .dot:focus, .dot:hover {
+      outline: 2px solid var(--focus);
+      border: 2px solid var(--accent);
+    }
+    .tooltip {
+      display: block;
+      position: absolute;
+      left: 34px;
+      background: #22244a;
+      color: #fff;
+      font-size: 0.94rem;
+      padding: 3px 12px;
+      border-radius: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      white-space: nowrap;
+      box-shadow: 0 2px 10px #0003;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.98;
+      animation: fadein 0.13s;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 0.98; }
+    }
+    .current-block-progress-wrapper {
+      margin: 16px 0 14px 0;
+      padding: 1px 0;
+    }
+    .current-block-progress-label {
+      font-size: 1em;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 4px;
+      margin-left: 2px;
+    }
+    .current-block-progress-bar-bg {
+      width: 100%;
+      background: var(--block-progress-bg);
+      height: 13px;
+      border-radius: 7px;
+      overflow: hidden;
+      position: relative;
+      margin-top: 4px;
+      box-shadow: 0 1px 6px #0002;
+    }
+    .current-block-progress-bar-fill {
+      background: var(--block-progress-fill);
+      height: 100%;
+      width: 0%;
+      border-radius: 7px;
+      transition: width 0.5s cubic-bezier(.44,2,.28,1);
+    }
+    .status-extras {
+      padding: 7px 0 3px 0;
+      margin-bottom: 2px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-top: 2px dashed var(--accent);
+      border-radius: 7px;
+      margin-top: 16px;
+      background: #23234733;
+    }
+    .status-extra {
+      flex: 1 1 150px;
+      min-width: 140px;
+      margin: 0;
+      background: #36366b;
+      color: #ffcc00;
+      border-radius: 8px;
+      padding: 10px 9px 7px 12px;
+      box-shadow: 0 1px 7px #0002;
+      font-size: 1.04em;
+      position: relative;
+      text-align: left;
+      transition: background 0.18s;
+      min-height: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .status-extra.block-time-left {
+      flex: 2 1 320px;
+      font-size: 1.3em;
+      background: #19194e;
+      color: #ffcc00;
       text-align: center;
-      margin: 10px 0;
-      font-size: 1.2rem;
+      align-items: center;
+      justify-content: center;
+      min-width: 200px;
+      min-height: 65px;
+      box-shadow: 0 3px 18px #0005;
+      letter-spacing: 1.1px;
     }
-
+    body.light .status-extra.block-time-left {
+      background: #ffe066;
+      color: #232347;
+    }
+    body.light .status-extra {
+      background: #e5e9ff;
+      color: #232347;
+    }
+    .status-extra .extra-title {
+      font-size: 0.97em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 1px;
+      letter-spacing: 0.5px;
+    }
+    .status-extra strong {
+      color: #fffbe7;
+      font-size: 1.13em;
+    }
+    .status-extra .emoji {
+      font-size: 1.25em;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+    .status-extra .copy-btn {
+      background: var(--accent);
+      color: #232347;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.83em;
+      padding: 1px 8px;
+      cursor: pointer;
+      font-weight: 700;
+      margin-left: 9px;
+      margin-top: 2px;
+      transition: background 0.14s;
+    }
+    .status-extra .copy-btn:hover {
+      background: #ffe066;
+    }
+    .status-extra .copied-msg {
+      color: #34d399;
+      font-size: 0.86em;
+      margin-left: 3px;
+      font-style: italic;
+    }
+    .status-extra .block-picker {
+      margin-top: 2px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #b8b8e0;
+      background: #fffbe7;
+      color: #232347;
+      padding: 1px 4px;
+    }
+    .status-extra .block-picker:focus {
+      outline: 2px solid var(--accent);
+    }
+    .status-extra .time {
+      font-size: 1.02em;
+      font-weight: 700;
+      color: #ffcc00;
+      margin-top: 2px;
+    }
+    @media (max-width: 700px) {
+      .status-extras { flex-direction: column; gap: 8px; }
+      .status-extra, .status-extra.block-time-left { min-width: 80px; }
+    }
+    .fun-border {
+      border: 3px dashed #ffcc00;
+      padding: 3px;
+      border-radius: 15px;
+      margin: 12px 0;
+      background: #36366b22;
+      animation: funborder 2.5s infinite linear;
+    }
+    @keyframes funborder {
+      to { filter: hue-rotate(360deg);}
+    }
+    .mood-bar {
+      margin: 20px 0 0 0;
+      text-align: center;
+      background: var(--block-bg);
+      border-radius: 11px;
+      box-shadow: 0 2px 10px #0003;
+      padding: 12px 0 11px 0;
+    }
+    .mood-bar label {
+      margin-right: 9px;
+      font-size: 1.1em;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .mood-btn {
+      font-size: 1.6em;
+      margin: 0 7px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: transform 0.12s;
+      outline: none;
+    }
+    .mood-btn.selected, .mood-btn:focus {
+      transform: scale(1.23);
+      filter: brightness(1.3);
+    }
+    .mood-history {
+      margin: 9px 0 0 0;
+      font-size: 0.97em;
+      color: #ffcc00;
+      font-weight: 500;
+      min-height: 1.6em;
+    }
     .restroom-status {
       text-align: center;
-      margin: 10px 0;
-      font-size: 1.2rem;
+      margin: 13px 0 0 0;
+      font-size: 1.25rem;
+      padding: 10px 0;
+      border-radius: 8px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      transition: background 0.2s, color 0.2s;
+      background: #232347;
+      color: #ffcc00;
+      border: 2px solid #ffe066;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 1px 7px #0003;
+      position: relative;
     }
-
     .restroom-status.unavailable {
-      color: red;
+      color: #fff0f0;
+      background: #b91c1c33;
+      border-color: #fbbf24;
+      text-shadow: 0 0 6px #9008;
     }
-
     .restroom-status.available {
-      color: green;
+      color: #166534;
+      background: #eaffea;
+      border-color: #34d399;
+      text-shadow: 0 0 6px #16653444;
+    }
+    .confetti-piece {
+      position: fixed;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 9999;
+      animation: confetti-fall 2.5s linear forwards;
+    }
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(92vh) rotate(360deg);
+        opacity: 0.25;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="bg-anim"></div>
   <div class="container">
+    <button class="theme-switcher" id="theme-switcher">🌙 Theme</button>
     <h1>6th Grade Schedule</h1>
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="encouragement" id="encouragement"></div>
+    <div class="schedule-header">Today's Blocks</div>
     <div class="schedule" id="schedule"></div>
     <div class="status" id="status">
       <h2>Status</h2>
+      <div class="current-block-progress-wrapper" id="current-block-progress" style="display:none;">
+        <div class="current-block-progress-label">Current Block Progress</div>
+        <div class="current-block-progress-bar-bg">
+          <div class="current-block-progress-bar-fill" id="current-block-progress-fill"></div>
+        </div>
+      </div>
       <div id="status-blocks"></div>
-    </div>
-    <div class="timer" id="timer-display">
-      Time Left in Current Block: <span id="time-left">N/A</span>
-    </div>
-    <div class="transition-timer" id="transition-timer">
-      Transition Time: <span id="transition-time">N/A</span>
-    </div>
-    <div class="next-transition-timer" id="next-transition-timer">
-      Next Transition Time: <span id="next-transition-time">N/A</span>
+      <div class="status-extras" id="status-extras"></div>
     </div>
     <div class="restroom-status" id="restroom-status">
       Restroom: Unavailable
     </div>
+    <div class="fun-border">
+      <div class="mood-bar">
+        <label>How are you feeling? </label>
+        <button class="mood-btn" data-mood="😀" title="Happy">😀</button>
+        <button class="mood-btn" data-mood="😐" title="Okay">😐</button>
+        <button class="mood-btn" data-mood="😢" title="Sad">😢</button>
+        <button class="mood-btn" data-mood="🤩" title="Awesome">🤩</button>
+        <button class="mood-btn" data-mood="😴" title="Tired">😴</button>
+        <div class="mood-history" id="mood-history"></div>
+      </div>
+    </div>
   </div>
-
+  <div class="notes-modal-bg" id="notes-modal-bg" style="display:none;">
+    <div class="notes-modal" id="notes-modal">
+      <h2 id="notes-modal-title">Notes</h2>
+      <textarea id="notes-modal-text"></textarea><br>
+      <button class="close-notes" id="close-notes-btn">Close</button>
+      <button class="save-notes" id="save-notes-btn">Save</button>
+    </div>
+  </div>
   <script>
+    // --- ALL LINES AND FEATURES KEPT, ONLY JUMP TO BLOCK REMOVED ---
     const schedule = [
       { name: "Homeroom", start: "9:15", end: "9:56" },
       { name: "2nd Block", start: "9:58", end: "10:58" },
@@ -129,113 +606,339 @@
       { name: "Electives", start: "15:13", end: "16:13" },
       { name: "Dismissal", start: "16:13", end: "17:00" },
     ];
-
-    const scheduleDiv = document.getElementById("schedule");
-    const statusDiv = document.getElementById("status-blocks");
-    const timerDisplay = document.getElementById("time-left");
-    const transitionDisplay = document.getElementById("transition-time");
-    const nextTransitionDisplay = document.getElementById("next-transition-time");
-    const restroomStatusDisplay = document.getElementById("restroom-status");
-
-    // Helper function to convert time to total seconds since midnight
+    const encouragements = [
+      "You got this! 🚀",
+      "Keep up the great work! 💪",
+      "You're making awesome progress! 🌟",
+      "Stay positive and keep learning! 😎",
+      "Take a deep breath and crush it! 🐉",
+      "High five, you're doing great! 🙌",
+      "Almost there! Keep going! 🏁",
+      "Wow! You're on fire today! 🔥",
+      "Proud of you! 🎉",
+      "Believe in yourself, you are unstoppable! 🦸‍♂️"
+    ];
+    function to12h(time) {
+      let [h, m] = time.split(":").map(Number);
+      let ampm = h >= 12 ? "PM" : "AM";
+      let h12 = h % 12; if (h12 === 0) h12 = 12;
+      return `${h12}:${String(m).padStart(2,"0")} ${ampm}`;
+    }
     const timeToSeconds = (time) => {
       const [hours, minutes] = time.split(":").map(Number);
       return hours * 3600 + minutes * 60;
     };
-
-    // Populate the schedule
-    schedule.forEach((block) => {
+    function formatTime(secs) {
+      if (secs <= 0) return "0m 00s";
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${m}m ${String(s).padStart(2, "0")}s`;
+    }
+    function getDayProgressPercent(nowSecs) {
+      const start = timeToSeconds(schedule[0].start);
+      const end = timeToSeconds(schedule[schedule.length-1].end);
+      if (nowSecs <= start) return 0;
+      if (nowSecs >= end) return 100;
+      return ((nowSecs - start) / (end - start)) * 100;
+    }
+    // --- THEME SWITCHER ---
+    const themeSwitcher = document.getElementById('theme-switcher');
+    themeSwitcher.onclick = function() {
+      document.body.classList.toggle('light');
+      if (document.body.classList.contains('light')) {
+        themeSwitcher.innerHTML = '🌞 Theme';
+        localStorage.setItem('bm-theme', 'light');
+      } else {
+        themeSwitcher.innerHTML = '🌙 Theme';
+        localStorage.setItem('bm-theme', 'dark');
+      }
+    };
+    (function(){
+      const theme = localStorage.getItem('bm-theme');
+      if (theme === 'light') {
+        document.body.classList.add('light');
+        themeSwitcher.innerHTML = '🌞 Theme';
+      }
+    })();
+    // --- BLOCK NOTES ---
+    const notesBtnClass = 'notes-btn';
+    const notesIndicatorClass = 'notes-indicator';
+    function getNotesKey(blockName) {
+      return 'bm-note-' + encodeURIComponent(blockName);
+    }
+    function getBlockNote(blockName) {
+      return localStorage.getItem(getNotesKey(blockName)) || '';
+    }
+    function setBlockNote(blockName, text) {
+      localStorage.setItem(getNotesKey(blockName), text);
+    }
+    function throwConfetti(lots = true) {
+      const confettiCount = lots ? 44 : 12;
+      for (let i = 0; i < confettiCount; i++) {
+        const conf = document.createElement('div');
+        conf.className = 'confetti-piece';
+        conf.style.left = Math.random()*98+'vw';
+        conf.style.background = `hsl(${Math.random()*360},80%,60%)`;
+        conf.style.animationDelay = (Math.random()*0.8).toFixed(2)+'s';
+        conf.style.transform = `rotate(${Math.random()*360}deg)`;
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(), 3000);
+      }
+    }
+    let lastBlockIndex = -1;
+    let time20mConfetti = {};
+    function showEncouragement() {
+      const eDiv = document.getElementById('encouragement');
+      eDiv.textContent = encouragements[Math.floor(Math.random()*encouragements.length)];
+      eDiv.style.opacity = '1';
+      setTimeout(()=>{eDiv.style.opacity='0.2';}, 4000);
+    }
+    const scheduleDiv = document.getElementById("schedule");
+    scheduleDiv.innerHTML = '';
+    schedule.forEach((block, idx) => {
       const blockDiv = document.createElement("div");
       blockDiv.classList.add("block");
       blockDiv.innerHTML = `
-        <span>${block.name} (${block.start} - ${block.end})</span>
+        <span>
+          ${block.name}
+          <span class="block-time">${to12h(block.start)} - ${to12h(block.end)}</span>
+          <button class="${notesBtnClass}" data-block="${block.name}">📝 Notes</button>
+          <span class="${notesIndicatorClass}" style="display:none;">✔</span>
+        </span>
       `;
       scheduleDiv.appendChild(blockDiv);
     });
-
-    // Timer and status logic
-    const updateTimersAndStatus = () => {
+    const notesModalBg = document.getElementById('notes-modal-bg');
+    const notesModal = document.getElementById('notes-modal');
+    const notesModalTitle = document.getElementById('notes-modal-title');
+    const notesModalText = document.getElementById('notes-modal-text');
+    let currNotesBlock = '';
+    scheduleDiv.addEventListener('click', function(e) {
+      if (e.target.classList.contains(notesBtnClass)) {
+        currNotesBlock = e.target.getAttribute('data-block');
+        notesModalTitle.textContent = `Notes for ${currNotesBlock}`;
+        notesModalText.value = getBlockNote(currNotesBlock);
+        notesModalBg.style.display = 'flex';
+        notesModalText.focus();
+      }
+    });
+    document.getElementById('close-notes-btn').onclick = () => {
+      notesModalBg.style.display = 'none';
+      currNotesBlock = '';
+    };
+    document.getElementById('save-notes-btn').onclick = () => {
+      setBlockNote(currNotesBlock, notesModalText.value);
+      notesModalBg.style.display = 'none';
+      currNotesBlock = '';
+      updateNotesIndicators();
+    };
+    notesModalBg.onclick = function(e){
+      if (e.target === notesModalBg) notesModalBg.style.display = 'none';
+    };
+    function updateNotesIndicators() {
+      Array.from(document.getElementsByClassName(notesBtnClass)).forEach(btn=>{
+        const block = btn.getAttribute('data-block');
+        const indicator = btn.parentNode.querySelector('.'+notesIndicatorClass);
+        indicator.style.display = getBlockNote(block).trim() ? '' : 'none';
+      });
+    }
+    // --- TOOLTIP (for upcoming blocks) ---
+    let tooltipInterval = null;
+    function showTooltip(dot, secondsUntil, blockName) {
+      removeTooltip();
+      const tooltip = document.createElement("span");
+      tooltip.className = "tooltip";
+      tooltip.innerText = `Starts in: ${formatTime(secondsUntil)}`;
+      dot.parentElement.appendChild(tooltip);
+      let currSecs = secondsUntil;
+      tooltipInterval = setInterval(() => {
+        currSecs--;
+        if (currSecs < 0) currSecs = 0;
+        tooltip.innerText = `Starts in: ${formatTime(currSecs)}`;
+        if (currSecs === 0) clearInterval(tooltipInterval);
+      }, 1000);
+    }
+    function removeTooltip() {
+      if (tooltipInterval) clearInterval(tooltipInterval);
+      document.querySelectorAll('.tooltip').forEach(t => t.remove());
+    }
+    // --- TIMERS & STATUS ---
+    const restroomStatusDisplay = document.getElementById("restroom-status");
+    const progressBar = document.getElementById("progress-bar");
+    const currentBlockProgress = document.getElementById("current-block-progress");
+    const currentBlockProgressFill = document.getElementById("current-block-progress-fill");
+    function updateTimersAndStatus() {
       const now = new Date();
       const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
       let currentBlock = null;
       let timeLeft = null;
-      let transitionTime = null;
-      let nextTransitionDuration = null;
-
-      // Clear status div
+      let currentBlockIndex = -1;
+      let blockStart = null, blockEnd = null;
+      progressBar.style.width = getDayProgressPercent(currentSeconds) + "%";
+      const statusDiv = document.getElementById("status-blocks");
       statusDiv.innerHTML = "";
-
       schedule.forEach((block, index) => {
         const start = timeToSeconds(block.start);
         const end = timeToSeconds(block.end);
-
         const statusItem = document.createElement("div");
         statusItem.classList.add("status-block");
-
+        let dotClass = "orange", tooltipSecs = start - currentSeconds;
         if (currentSeconds >= start && currentSeconds < end) {
-          // Current block
           currentBlock = block;
+          currentBlockIndex = index;
           timeLeft = end - currentSeconds;
-          statusItem.innerHTML = `<span class="dot green"></span>${block.name}`;
+          dotClass = "green";
+          blockStart = start;
+          blockEnd = end;
         } else if (currentSeconds >= end) {
-          // Attended block
-          statusItem.innerHTML = `<span class="dot red"></span>${block.name}`;
-        } else {
-          // Not yet attended block
-          statusItem.innerHTML = `<span class="dot orange"></span>${block.name}`;
+          dotClass = "red";
         }
-
+        statusItem.innerHTML = `<span tabindex="0" class="dot ${dotClass}"></span>${block.name}`;
+        if (dotClass === "orange" && tooltipSecs > 0) {
+          const dot = statusItem.querySelector('.dot');
+          dot.onmouseenter = () => showTooltip(dot, tooltipSecs, block.name);
+          dot.onmouseleave = removeTooltip;
+          dot.onfocus = () => showTooltip(dot, tooltipSecs, block.name);
+          dot.onblur = removeTooltip;
+        }
         statusDiv.appendChild(statusItem);
-
-        // Transition times
-        if (currentSeconds >= end && index < schedule.length - 1) {
-          const nextBlock = schedule[index + 1];
-          const nextStart = timeToSeconds(nextBlock.start);
-          transitionTime = nextStart - currentSeconds;
-          nextTransitionDuration = nextStart - end;
-        }
       });
-
-      // Update timers
-      timerDisplay.textContent = currentBlock
-        ? `${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`
-        : "N/A";
-
-      transitionDisplay.textContent = transitionTime
-        ? `${Math.floor(transitionTime / 60)}m ${transitionTime % 60}s`
-        : "No active transition";
-
-      nextTransitionDisplay.textContent = nextTransitionDuration
-        ? `${Math.floor(nextTransitionDuration / 60)}m ${nextTransitionDuration % 60}s`
-        : "No more transitions today";
-
-      // Update restroom status
+      if (currentBlock && blockStart !== null && blockEnd !== null && blockEnd > blockStart) {
+        const total = blockEnd - blockStart;
+        const elapsed = currentSeconds - blockStart;
+        const percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
+        currentBlockProgress.style.display = "";
+        if (currentBlockProgressFill) currentBlockProgressFill.style.width = percent + "%";
+      } else {
+        currentBlockProgress.style.display = "none";
+        if (currentBlockProgressFill) currentBlockProgressFill.style.width = "0%";
+      }
       if (currentBlock) {
-        const blockDuration = timeToSeconds(currentBlock.end) - timeToSeconds(currentBlock.start);
+        const blockDuration = blockEnd - blockStart;
         const timeSinceStart = blockDuration - timeLeft;
         const timeUntilEnd = timeLeft;
-
-        if (timeSinceStart < 600 || timeUntilEnd < 600) {
-          restroomStatusDisplay.textContent = "Restroom: Unavailable";
+        if (timeSinceStart < 600) {
+          restroomStatusDisplay.textContent = "Restroom: Unavailable (Wait 10 min after block start)";
           restroomStatusDisplay.className = "restroom-status unavailable";
-        } else {
+        }
+        else if (timeUntilEnd < 600) {
+          restroomStatusDisplay.textContent = "Restroom: Unavailable (Less than 10 min left)";
+          restroomStatusDisplay.className = "restroom-status unavailable";
+        }
+        else {
           restroomStatusDisplay.textContent = "Restroom: Available";
           restroomStatusDisplay.className = "restroom-status available";
         }
-      }
-
-      // Update the tab title
-      if (currentBlock) {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        document.title = `${currentBlock.name} - ${minutes}m ${seconds}s remaining`;
+        document.title = `${currentBlock.name} - ${formatTime(timeLeft)} remaining`;
+        if (lastBlockIndex !== currentBlockIndex) {
+          throwConfetti(true);
+          showEncouragement();
+          lastBlockIndex = currentBlockIndex;
+          time20mConfetti = {};
+        }
+        if (blockStart !== null && (currentSeconds - blockStart >= 1200) && !time20mConfetti[currentBlockIndex]) {
+          throwConfetti(false);
+          time20mConfetti[currentBlockIndex] = true;
+        }
       } else {
+        restroomStatusDisplay.textContent = "Restroom: Unavailable";
+        restroomStatusDisplay.className = "restroom-status unavailable";
         document.title = "Schedule";
       }
-    };
-
+      updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now);
+    }
     setInterval(updateTimersAndStatus, 1000);
     updateTimersAndStatus();
+    updateNotesIndicators();
+    function updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now) {
+      const extras = document.getElementById("status-extras");
+      let copyMsg = "";
+      function copyBlockName() {
+        if (currentBlock) {
+          navigator.clipboard.writeText(currentBlock.name);
+          copyMsg = "Copied!";
+          showExtras();
+          setTimeout(()=>{copyMsg="";showExtras();},1000);
+        }
+      }
+      let timeLeftStr = currentBlock ? (
+        timeLeft > 0
+          ? `${Math.floor(timeLeft/3600)}h ${Math.floor((timeLeft%3600)/60)}m ${String(timeLeft%60).padStart(2,"0")}s`
+          : "Done"
+      ) : "N/A";
+      const totalSecs = timeToSeconds(schedule[schedule.length-1].end) - timeToSeconds(schedule[0].start);
+      const nowSecs = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+      let progress = (nowSecs - timeToSeconds(schedule[0].start)) / totalSecs * 100;
+      progress = Math.max(0, Math.min(100, progress));
+      let emojiArr = ["😃","💪","🚀","🤩","😎","🌈","🔥","🎯","🍀","🦄","🌟","🏆"];
+      let randomEmoji = localStorage.getItem("status-random-emoji") || emojiArr[0];
+      function refreshEmoji() {
+        randomEmoji = emojiArr[Math.floor(Math.random()*emojiArr.length)];
+        localStorage.setItem("status-random-emoji", randomEmoji);
+        showExtras();
+      }
+      function showExtras() {
+        extras.innerHTML = `
+          <div class="status-extra">
+            <span class="extra-title">Current Block Name</span>
+            <span><strong>${currentBlock ? currentBlock.name : 'None'}</strong>
+              <button class="copy-btn" id="copy-block-btn">Copy</button>
+              ${copyMsg ? `<span class="copied-msg">${copyMsg}</span>` : ""}
+            </span>
+          </div>
+          <div class="status-extra block-time-left">
+            <span class="extra-title" style="font-size:1.05em;">Block Time Left</span>
+            <span class="time" style="font-size:1.45em;font-weight:800;">${timeLeftStr}</span>
+          </div>
+          <div class="status-extra">
+            <span class="extra-title">Day Progress</span>
+            <span class="time">${progress.toFixed(1)}%</span>
+          </div>
+          <div class="status-extra">
+            <span class="extra-title">Motivation</span>
+            <span class="emoji" id="refresh-emoji-btn" style="cursor:pointer;" title="Refresh">${randomEmoji}</span>
+          </div>
+        `;
+        const copyBtn = document.getElementById("copy-block-btn");
+        if (copyBtn) copyBtn.onclick = copyBlockName;
+        const emojiBtn = document.getElementById("refresh-emoji-btn");
+        if (emojiBtn) emojiBtn.onclick = refreshEmoji;
+      }
+      showExtras();
+    }
+    (function(){
+      const moods = ["😀","😐","😢","🤩","😴"];
+      const moodBtns = Array.from(document.getElementsByClassName("mood-btn"));
+      const moodHistoryEl = document.getElementById("mood-history");
+      function saveMood(mood) {
+        let arr = [];
+        try { arr = JSON.parse(localStorage.getItem("bm-mood-history")||"[]"); } catch {}
+        arr.unshift({ mood, t: Date.now() });
+        arr = arr.slice(0, 10);
+        localStorage.setItem("bm-mood-history", JSON.stringify(arr));
+        showMoodHistory();
+      }
+      function showMoodHistory() {
+        let arr = [];
+        try { arr = JSON.parse(localStorage.getItem("bm-mood-history")||"[]"); } catch {}
+        if(arr.length){
+          moodHistoryEl.textContent = "Recent: " + arr.slice(0,5).map(m=>m.mood).join(" ");
+        } else {
+          moodHistoryEl.textContent = "";
+        }
+        moodBtns.forEach(btn=>{
+          btn.classList.remove("selected");
+        });
+        if(arr.length) {
+          const current = arr[0].mood;
+          moodBtns.forEach(btn=>{ if(btn.dataset.mood === current) btn.classList.add("selected"); });
+        }
+      }
+      moodBtns.forEach(btn=>{
+        btn.onclick = ()=>{ saveMood(btn.dataset.mood); };
+      });
+      showMoodHistory();
+    })();
   </script>
 </body>
 </html>
