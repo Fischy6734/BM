@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COUNTDOWN UNTIL EOG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: radial-gradient(circle at 20% 20%, #232526, #414345 80%);
+            color: #fff;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .countdown-container {
+            background: rgba(30, 41, 59, 0.95);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, .37);
+            border-radius: 20px;
+            padding: 48px 32px;
+            text-align: center;
+            border: 1.5px solid #00e4d0;
+            max-width: 400px;
+            width: 90vw;
+        }
+        h1 {
+            font-size: 2.4rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+            color: #00e4d0;
+            text-shadow: 0 0 8px #00e4d0, 0 0 14px #232526;
+        }
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+        .countdown-unit {
+            background: #222c36;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #00e4d08a;
+            padding: 20px 16px;
+            min-width: 60px;
+        }
+        .countdown-number {
+            font-size: 2.4rem;
+            font-weight: bold;
+            color: #00e4d0;
+            text-shadow: 0 0 6px #00e4d0;
+        }
+        .countdown-label {
+            display: block;
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #b2bec3;
+            letter-spacing: 0.05em;
+        }
+        .techy-glow {
+            text-shadow: 0 0 7px #00e4d0, 0 0 21px #00e4d0, 0 0 42px #0ff;
+        }
+        @media (max-width: 500px) {
+            .countdown {
+                gap: 8px;
+            }
+            .countdown-unit {
+                padding: 12px 6px;
+                min-width: 36px;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="countdown-container">
+        <h1 class="techy-glow">COUNTDOWN UNTIL EOG</h1>
+        <div class="countdown" id="countdown">
+            <!-- JS will fill this in -->
+        </div>
+        <div id="eogMessage" style="font-size:1.2rem; color:#ff7675; margin-top:10px;"></div>
+    </div>
+    <script>
+        // EOG target date: May 22, 2025, 00:00:00
+        const targetDate = new Date("2025-05-22T00:00:00");
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = targetDate - now;
+            const countdownDiv = document.getElementById('countdown');
+            const messageDiv = document.getElementById('eogMessage');
+
+            if (diff <= 0) {
+                countdownDiv.innerHTML = '';
+                messageDiv.textContent = "EOG DAY IS HERE!";
+                document.title = "EOG DAY IS HERE!";
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            countdownDiv.innerHTML = `
+                <div class="countdown-unit">
+                    <span class="countdown-number">${days}</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-unit">
+                    <span class="countdown-number">${hours}</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-unit">
+                    <span class="countdown-number">${minutes}</span>
+                    <span class="countdown-label">Minutes</span>
+                </div>
+                <div class="countdown-unit">
+                    <span class="countdown-number">${seconds}</span>
+                    <span class="countdown-label">Seconds</span>
+                </div>
+            `;
+
+            document.title = `EOG Countdown: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+            messageDiv.textContent = "";
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
