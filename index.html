@@ -610,7 +610,139 @@
       color: #fff;
       border-color: #2b8af7;
     }
+      <style>
+    /* Full-screen backdrop for the overlay */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0; /* Starts hidden */
+      visibility: hidden; /* Starts hidden */
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    /* Make the overlay visible */
+    #overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Stylish modal box */
+    #overlay-content {
+      position: relative;
+      background: rgba(255, 255, 255, 0.25); /* Semi-transparent white */
+      backdrop-filter: blur(10px); /* Glassmorphism effect */
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff; /* White text for contrast */
+      padding: 50px 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      text-align: center;
+      max-width: 500px;
+      transform: scale(0.9); /* Smaller size for initial animation */
+      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    /* Scale up the modal when shown */
+    #overlay.show #overlay-content {
+      transform: scale(1);
+    }
+
+    /* Title styling */
+    #overlay-content h2 {
+      margin-top: 0;
+      font-size: 2em;
+      font-family: sans-serif;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Paragraph styling */
+    #overlay-content p {
+      font-size: 1.1em;
+      line-height: 1.5;
+      font-family: sans-serif;
+    }
+
+    /* Close button styling */
+    #close-button {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.3);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5em;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    #close-button:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+    }
+
+    /* Example background for the rest of the page */
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: sans-serif;
+        color: white;
+        text-align: center;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
   </style>
+</head>
+<body>
+
+  <!-- The stylish overlay box -->
+  <div id="overlay">
+    <div id="overlay-content">
+      <button id="close-button">&times;</button>
+      <h2>We're Working on It!</h2>
+      <p>We are trying to get the half-day schedule. Please hang in there!</p>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('overlay');
+    const closeButton = document.getElementById('close-button');
+
+    // Function to show the overlay with a fade and scale animation
+    function showOverlay() {
+      overlay.classList.add('show');
+    }
+
+    // Function to hide the overlay
+    function hideOverlay() {
+      overlay.classList.remove('show');
+    }
+
+    // Add a click event listener to the close button
+    closeButton.addEventListener('click', hideOverlay);
+
+    // Show the overlay on page load
+    document.addEventListener('DOMContentLoaded', showOverlay);
+  </script>
+
+</body>
+</html>
+
   <a title="GDPR-compliant Web Analytics" href="https://clicky.com/101493068"><img alt="Clicky" src="//static.getclicky.com/media/links/badge.gif" border="0" /></a>
 <script async data-id="101493068" src="//static.getclicky.com/js"></script>
 
