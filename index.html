@@ -612,7 +612,6 @@
     }
   </style>
 <script>
-  // Wrap the code in a function that waits for the page to load.
   window.addEventListener('DOMContentLoaded', (event) => {
     // Create the overlay container
     const overlay = document.createElement('div');
@@ -642,11 +641,12 @@
       background-color: white;
       padding: 20px;
       border: 1px solid black;
+      color: black; /* Set text color for the entire box to black */
     `;
 
-    // Add the message
+    // Add the message with a failsafe to ensure black text
     overlayContent.innerHTML = `
-      <p>We are trying to get the half-day schedule. Please hang in there!</p>
+      <p style="color: black !important;">We are trying to get the half-day schedule. Please hang in there!</p>
     `;
 
     // Create the delete button
@@ -662,6 +662,7 @@
       background: transparent;
       font-size: 1.5em;
       cursor: pointer;
+      color: black; /* Ensure the button's 'x' symbol is black */
     `;
 
     // Add click event to the button to remove the overlay
@@ -679,6 +680,7 @@
     document.body.appendChild(overlay);
   });
 </script>
+
 
 
   <a title="GDPR-compliant Web Analytics" href="https://clicky.com/101493068"><img alt="Clicky" src="//static.getclicky.com/media/links/badge.gif" border="0" /></a>
