@@ -611,75 +611,7 @@
       border-color: #2b8af7;
     }
   </style>
-<script>
-  window.addEventListener('DOMContentLoaded', (event) => {
-    // Create the overlay container
-    const overlay = document.createElement('div');
-    overlay.id = 'overlay';
-    
-    // Apply minimal inline styling for positioning
-    overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    `;
 
-    // Create the content box inside the overlay
-    const overlayContent = document.createElement('div');
-    overlayContent.id = 'overlay-content';
-    
-    // Apply minimal inline styling for the content box
-    overlayContent.style.cssText = `
-      position: relative;
-      background-color: white;
-      padding: 20px;
-      border: 1px solid black;
-      color: black; /* Set text color for the entire box to black */
-    `;
-
-    // Add the message with a failsafe to ensure black text
-    overlayContent.innerHTML = `
-      <p style="color: black !important;">We are trying to get the half-day schedule. Please hang in there!</p>
-    `;
-
-    // Create the delete button
-    const deleteButton = document.createElement('button');
-    deleteButton.innerHTML = '&times;';
-    
-    // Apply inline styling for the delete button
-    deleteButton.style.cssText = `
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      border: none;
-      background: transparent;
-      font-size: 1.5em;
-      cursor: pointer;
-      color: black; /* Ensure the button's 'x' symbol is black */
-    `;
-
-    // Add click event to the button to remove the overlay
-    deleteButton.addEventListener('click', () => {
-      document.body.removeChild(overlay);
-    });
-
-    // Append the button to the content box
-    overlayContent.appendChild(deleteButton);
-    
-    // Append the content box to the main overlay container
-    overlay.appendChild(overlayContent);
-    
-    // Append the main overlay container to the document body
-    document.body.appendChild(overlay);
-  });
-</script>
 
 
 
@@ -739,14 +671,12 @@
   <script>
     // ... all your JS ...
     const schedule = [
-      { name: "Homeroom", start: "9:15", end: "9:55" },
-      { name: "Electives", start: "9:58", end: "10:58" },
-      { name: "3rd Block", start: "11:01", end: "11:56" },
-      { name: "4th Block", start: "12:04", end: "13:04" },
-      { name: "Lunch & HAC", start: "13:07", end: "14:07" },
-      { name: "5th Block", start: "14:10", end: "15:10" },
-      { name: "6th Block", start: "15:13", end: "16:13" },
-      { name: "Dismissal", start: "16:13", end: "17:00" },
+      { name: "HR/3rd", start: "8:45", end: "9:40" },
+      { name: "Pep Rally", start: "9:45", end: "10:40" },
+      { name: "Lunch & HAC", start: "10:50", end: "11:50" },
+      { name: "3rd Block", start: "11:50", end: "12:10" },
+      { name: "5th Block", start: "12:10", end: "13:15" },
+      
     ];
     const encouragements = [
       "You got this! 🚀",
