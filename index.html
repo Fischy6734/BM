@@ -611,72 +611,75 @@
       border-color: #2b8af7;
     }
   </style>
-  <script>
-  // Create the overlay container
-  const overlay = document.createElement('div');
-  overlay.id = 'overlay';
-  
-  // Apply minimal inline styling for positioning
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  `;
+<script>
+  // Wrap the code in a function that waits for the page to load.
+  window.addEventListener('DOMContentLoaded', (event) => {
+    // Create the overlay container
+    const overlay = document.createElement('div');
+    overlay.id = 'overlay';
+    
+    // Apply minimal inline styling for positioning
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    `;
 
-  // Create the content box inside the overlay
-  const overlayContent = document.createElement('div');
-  overlayContent.id = 'overlay-content';
-  
-  // Apply minimal inline styling for the content box
-  overlayContent.style.cssText = `
-    position: relative;
-    background-color: white;
-    padding: 20px;
-    border: 1px solid black;
-  `;
+    // Create the content box inside the overlay
+    const overlayContent = document.createElement('div');
+    overlayContent.id = 'overlay-content';
+    
+    // Apply minimal inline styling for the content box
+    overlayContent.style.cssText = `
+      position: relative;
+      background-color: white;
+      padding: 20px;
+      border: 1px solid black;
+    `;
 
-  // Add the message
-  overlayContent.innerHTML = `
-    <p>We are trying to get the half-day schedule. Please hang in there!</p>
-  `;
+    // Add the message
+    overlayContent.innerHTML = `
+      <p>We are trying to get the half-day schedule. Please hang in there!</p>
+    `;
 
-  // Create the delete button
-  const deleteButton = document.createElement('button');
-  deleteButton.innerHTML = '&times;';
-  
-  // Apply inline styling for the delete button
-  deleteButton.style.cssText = `
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    border: none;
-    background: transparent;
-    font-size: 1.5em;
-    cursor: pointer;
-  `;
+    // Create the delete button
+    const deleteButton = document.createElement('button');
+    deleteButton.innerHTML = '&times;';
+    
+    // Apply inline styling for the delete button
+    deleteButton.style.cssText = `
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      border: none;
+      background: transparent;
+      font-size: 1.5em;
+      cursor: pointer;
+    `;
 
-  // Add click event to the button to remove the overlay
-  deleteButton.addEventListener('click', () => {
-    document.body.removeChild(overlay);
+    // Add click event to the button to remove the overlay
+    deleteButton.addEventListener('click', () => {
+      document.body.removeChild(overlay);
+    });
+
+    // Append the button to the content box
+    overlayContent.appendChild(deleteButton);
+    
+    // Append the content box to the main overlay container
+    overlay.appendChild(overlayContent);
+    
+    // Append the main overlay container to the document body
+    document.body.appendChild(overlay);
   });
-
-  // Append the button to the content box
-  overlayContent.appendChild(deleteButton);
-  
-  // Append the content box to the main overlay container
-  overlay.appendChild(overlayContent);
-  
-  // Append the main overlay container to the document body
-  document.body.appendChild(overlay);
-
 </script>
+
 
   <a title="GDPR-compliant Web Analytics" href="https://clicky.com/101493068"><img alt="Clicky" src="//static.getclicky.com/media/links/badge.gif" border="0" /></a>
 <script async data-id="101493068" src="//static.getclicky.com/js"></script>
