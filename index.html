@@ -622,6 +622,68 @@
       border-color: #2b8af7;
     }
   </style>
+
+<iframe srcdoc='
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
+    }
+    video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none; /* Hidden until start time */
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <video id="scheduledVideo" src="67.MOV"></video>
+
+  <script>
+    const scheduledTime = "12:35"; // 🔹 set target time
+    const videoDuration = 22.15 * 1000; // 🔹 duration (ms)
+
+    const video = document.getElementById("scheduledVideo");
+
+    function checkTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const currentTime = `${hours}:${minutes}`;
+
+      if (currentTime === scheduledTime) {
+        playVideo();
+      }
+    }
+
+    function playVideo() {
+      video.style.display = "block";
+      video.play();
+
+      setTimeout(() => {
+        video.pause();
+        video.style.display = "none";
+      }, videoDuration);
+    }
+
+    setInterval(checkTime, 1000);
+  </script>
+</body>
+</html>
+' width="100%" height="100%" style="border:none;"></iframe>
+
+	
   <div id='woobox-root'></div>
 	<script>
 		(function(d, s, id) {
