@@ -22,6 +22,70 @@
       --rainbow: none;
       --fancy-glow: none;
     }
+	  /* Animation keyframes */
+@keyframes slideInFromTop {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+/* Base notification styles */
+.admin-sdk-notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translate(-50%, -100%); /* Start position above the viewport */
+  max-width: 400px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  z-index: 999999 !important;
+  color: white;
+  opacity: 0; /* Initially hidden */
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+/* Display animation */
+.admin-sdk-notification.show {
+  transform: translate(-50%, 0); /* End position centered at the top */
+  opacity: 1;
+}
+
+/* Notification contents */
+.admin-sdk-notification-header {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #60a5fa;
+}
+
+.admin-sdk-notification-message {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* Light mode adaptations */
+@media (prefers-color-scheme: light) {
+  .admin-sdk-notification {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #000;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-sdk-notification-header {
+    color: #2563eb;
+  }
+}
+
     body {
       font-family: system-ui, 'Segoe UI', Arial, sans-serif;
       background: linear-gradient(120deg, #191c22 60%, #23272e 100%);
