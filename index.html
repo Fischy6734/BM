@@ -1,13 +1,13 @@
-<!-- WebSocket Message Broadcast - Embed Code -->
+
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
 (function() {
-    // Connect to the WebSocket server
+
     const socket = io('http://broadcastadmin.fischyweb.com');
     
     let messageBubble = null;
     
-    // Create the floating message bubble
+
     function createBubble(message, shutdownNotice) {
         // Remove existing bubble if any
         if (messageBubble) {
@@ -37,7 +37,7 @@
             animation: slideIn 0.5s ease-out;
         `;
         
-        // Build content
+
         let content = '';
         if (message) {
             content += `<div style="font-size: 14px; line-height: 1.6; margin-bottom: ${shutdownNotice ? '12px' : '0'};">${escapeHtml(message)}</div>`;
@@ -46,7 +46,7 @@
             content += `<div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 6px; font-size: 13px; border-left: 3px solid #ffc107;">⚠️ ${escapeHtml(shutdownNotice)}</div>`;
         }
         
-        // Add close button
+
         content += `<button onclick="this.parentElement.remove()" style="
             position: absolute;
             top: 10px;
@@ -65,7 +65,7 @@
         
         messageBubble.innerHTML = content;
         
-        // Add animation keyframes
+
         if (!document.getElementById('ws-bubble-styles')) {
             const style = document.createElement('style');
             style.id = 'ws-bubble-styles';
@@ -84,11 +84,11 @@
             document.head.appendChild(style);
         }
         
-        // Add to page
+
         document.body.appendChild(messageBubble);
     }
     
-    // Escape HTML to prevent XSS
+
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -873,11 +873,11 @@
     </div>
   </div>
   <script>
-    // ... all your JS ...
+   
     const schedule = [
       { name: "Homeroom", start: "9:15", end: "9:55" },
       { name: "Electives", start: "9:58", end: "10:58" },
-      { name: "3rd Block", start: "11:01", end: "11:56" },
+      { name: "3rd Block", start: "11:01", end: "12:01" },
       { name: "4th Block", start: "12:04", end: "13:04" },
       { name: "Lunch & HAC", start: "13:07", end: "14:07" },
       { name: "5th Block", start: "14:10", end: "15:10" },
@@ -1021,7 +1021,7 @@
         indicator.style.display = getBlockNote(block).trim() ? '' : 'none';
       });
     }
-    // --- TOOLTIP (for upcoming blocks) ---
+    
     let tooltipInterval = null;
     function showTooltip(dot, secondsUntil, blockName) {
       removeTooltip();
@@ -1041,7 +1041,7 @@
       if (tooltipInterval) clearInterval(tooltipInterval);
       document.querySelectorAll('.tooltip').forEach(t => t.remove());
     }
-    // --- TIMERS & STATUS ---
+   
     const restroomStatusDisplay = document.getElementById("restroom-status");
     const progressBar = document.getElementById("progress-bar");
     const currentBlockProgress = document.getElementById("current-block-progress");
