@@ -5,579 +5,70 @@
 		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		    <title>7th Grade Schedule</title>
 	    <style>
-			        * {
-						            margin: 0;
-						            padding: 0;
-						            box-sizing: border-box;
-					}
-
-			        :root {
-						            --primary: #2b8af7;
-						            --primary-dark: #1664bb;
-						            --success: #41c65b;
-						            --warning: #f5a623;
-						            --danger: #f44336;
-						            --bg-dark: #0f1419;
-						            --bg-darker: #0a0e13;
-						            --card-bg: rgba(30, 41, 59, 0.4);
-						            --card-border: rgba(148, 163, 184, 0.2);
-						            --text-primary: #e3e3e3;
-						            --text-secondary: #a0aec0;
-						            --glass-bg: rgba(15, 20, 25, 0.5);
-						            --glass-border: rgba(255, 255, 255, 0.1);
-					}
-
-			        body {
-						            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-						            background: linear-gradient(135deg, var(--bg-darker) 0%, #1a254f 50%, var(--bg-dark) 100%);
-						            color: var(--text-primary);
-						            min-height: 100vh;
-						            overflow-x: hidden;
-						            position: relative;
-					}
-
-			        /* Animated background */
-			        body::before {
-						            content: '';
-						            position: fixed;
-						            top: 0;
-						            left: 0;
-						            width: 200%;
-						            height: 200%;
-						            background: radial-gradient(circle at 20% 50%, rgba(43, 138, 247, 0.1) 0%, transparent 50%),
-										                        radial-gradient(circle at 80% 80%, rgba(65, 198, 91, 0.05) 0%, transparent 50%);
-						            animation: float 15s ease-in-out infinite;
-						            pointer-events: none;
-						            z-index: -1;
-					}
-
-			        @keyframes float {
-						            0%, 100% { transform: translate(0, 0); }
-						            25% { transform: translate(50px, -50px); }
-						            50% { transform: translate(-30px, 30px); }
-						            75% { transform: translate(30px, 50px); }
-					}
-
-			        /* Navbar */
-			        .navbar {
-						            background: var(--glass-bg);
-						            backdrop-filter: blur(10px);
-						            border-bottom: 1px solid var(--glass-border);
-						            padding: 1rem 2rem;
-						            position: sticky;
-						            top: 0;
-						            z-index: 100;
-						            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-					}
-
-			        .navbar-content {
-						            max-width: 1000px;
-						            margin: 0 auto;
-						            display: flex;
-						            justify-content: space-between;
-						            align-items: center;
-					}
-
-			        .navbar-brand {
-						            font-size: 1.5rem;
-						            font-weight: 700;
-						            color: var(--primary);
-						            letter-spacing: -0.5px;
-					}
-
-			        .navbar-time {
-						            font-size: 1.1rem;
-						            color: var(--text-secondary);
-						            font-weight: 500;
-					}
-
-			        .navbar-actions {
-						            display: flex;
-						            gap: 1rem;
-						            align-items: center;
-					}
-
-			        .theme-btn, .nav-link {
-						            background: rgba(43, 138, 247, 0.1);
-						            border: 1px solid var(--glass-border);
-						            color: var(--primary);
-						            padding: 0.5rem 1rem;
-						            border-radius: 8px;
-						            cursor: pointer;
-						            font-weight: 600;
-						            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-						            font-size: 0.9rem;
-					}
-
-			        .theme-btn:hover, .nav-link:hover {
-						            background: rgba(43, 138, 247, 0.2);
-						            border-color: var(--primary);
-						            transform: translateY(-2px);
-						            box-shadow: 0 4px 12px rgba(43, 138, 247, 0.2);
-					}
-
-			        .container {
-						            max-width: 900px;
-						            margin: 2rem auto;
-						            padding: 0 1.5rem;
-					}
-
-			        /* Header Section */
-			        .header {
-						            text-align: center;
-						            margin-bottom: 3rem;
-					}
-
-			        .header-title {
-						            font-size: 3.5rem;
-						            font-weight: 800;
-						            background: linear-gradient(135deg, var(--primary) 0%, #5200ff 100%);
-						            -webkit-background-clip: text;
-						            -webkit-text-fill-color: transparent;
-						            background-clip: text;
-						            margin-bottom: 0.5rem;
-						            letter-spacing: -1px;
-					}
-
-			        .header-subtitle {
-						            color: var(--text-secondary);
-						            font-size: 1.1rem;
-						            margin-bottom: 1.5rem;
-					}
-
-			        .progress-section {
-						            margin-bottom: 2rem;
-					}
-
-			        .progress-label {
-						            font-size: 0.9rem;
-						            color: var(--text-secondary);
-						            margin-bottom: 0.5rem;
-						            font-weight: 600;
-					}
-
-			        .progress-bar-container {
-						            width: 100%;
-						            height: 12px;
-						            background: var(--card-bg);
-						            border-radius: 100px;
-						            overflow: hidden;
-						            border: 1px solid var(--card-border);
-						            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-					}
-
-			        .progress-bar {
-						            height: 100%;
-						            background: linear-gradient(90deg, var(--primary) 0%, #5200ff 100%);
-						            border-radius: 100px;
-						            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-						            box-shadow: 0 0 20px rgba(43, 138, 247, 0.5);
-					}
-
-			        .encouragement {
-						            text-align: center;
-						            font-size: 1.2rem;
-						            color: var(--primary);
-						            font-weight: 600;
-						            min-height: 1.5em;
-						            margin-top: 1rem;
-						            animation: fadeInOut 5s ease-in-out;
-					}
-
-			        @keyframes fadeInOut {
-						            0%, 100% { opacity: 0.3; }
-						            50% { opacity: 1; }
-					}
-
-			        /* Main Schedule Grid */
-			        .schedule-container {
-						            display: grid;
-						            gap: 1rem;
-						            margin-bottom: 3rem;
-					}
-
-			        .schedule-header {
-						            font-size: 1.3rem;
-						            font-weight: 700;
-						            color: var(--primary);
-						            margin-bottom: 1rem;
-					}
-
-			        .block {
-						            background: var(--card-bg);
-						            backdrop-filter: blur(10px);
-						            border: 1px solid var(--card-border);
-						            border-radius: 12px;
-						            padding: 1.2rem 1.5rem;
-						            display: flex;
-						            justify-content: space-between;
-						            align-items: center;
-						            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-						            hover: border-color var(--primary);
-					}
-
-			        .block:hover {
-						            background: rgba(43, 138, 247, 0.1);
-						            border-color: var(--primary);
-						            transform: translateY(-4px);
-						            box-shadow: 0 8px 24px rgba(43, 138, 247, 0.15);
-					}
-
-			        .block-left {
-						            flex: 1;
-					}
-
-			        .block-name {
-						            font-size: 1.2rem;
-						            font-weight: 700;
-						            color: var(--text-primary);
-						            margin-bottom: 0.3rem;
-					}
-
-			        .block-time {
-						            font-size: 0.95rem;
-						            color: var(--text-secondary);
-						            font-weight: 500;
-					}
-
-			        .block-right {
-						            display: flex;
-						            gap: 0.8rem;
-						            align-items: center;
-						            margin-left: 1rem;
-					}
-
-			        .notes-btn {
-						            background: var(--primary);
-						            color: white;
-						            border: none;
-						            padding: 0.5rem 1.2rem;
-						            border-radius: 8px;
-						            cursor: pointer;
-						            font-weight: 600;
-						            font-size: 0.9rem;
-						            transition: all 0.2s;
-					}
-
-			        .notes-btn:hover {
-						            background: var(--primary-dark);
-						            transform: scale(1.05);
-					}
-
-			        .notes-indicator {
-						            color: var(--success);
-						            font-size: 1.2rem;
-						            display: none;
-					}
-
-			        /* Status Section */
-			        .status-card {
-						            background: var(--card-bg);
-						            backdrop-filter: blur(10px);
-						            border: 1px solid var(--card-border);
-						            border-radius: 12px;
-						            padding: 2rem;
-						            margin-bottom: 2rem;
-						            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-					}
-
-			        .status-title {
-						            font-size: 1.3rem;
-						            font-weight: 700;
-						            color: var(--primary);
-						            margin-bottom: 1.5rem;
-					}
-
-			        .status-items {
-						            display: grid;
-						            gap: 1rem;
-						            margin-bottom: 1.5rem;
-					}
-
-			        .status-item {
-						            display: flex;
-						            align-items: center;
-						            gap: 1rem;
-						            padding: 0.8rem;
-						            background: rgba(43, 138, 247, 0.05);
-						            border-radius: 8px;
-						            border: 1px solid rgba(43, 138, 247, 0.1);
-					}
-
-			        .status-dot {
-						            width: 20px;
-						            height: 20px;
-						            border-radius: 50%;
-						            flex-shrink: 0;
-						            border: 2px solid var(--text-secondary);
-					}
-
-			        .status-dot.green {
-						            background: var(--success);
-						            border-color: var(--success);
-						            box-shadow: 0 0 12px rgba(65, 198, 91, 0.3);
-					}
-
-			        .status-dot.orange {
-						            background: var(--warning);
-						            border-color: var(--warning);
-						            box-shadow: 0 0 12px rgba(245, 166, 35, 0.3);
-					}
-
-			        .status-dot.red {
-						            background: var(--danger);
-						            border-color: var(--danger);
-					}
-
-			        .status-text {
-						            font-weight: 500;
-						            color: var(--text-primary);
-					}
-
-			        .status-extras {
-						            display: grid;
-						            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-						            gap: 1rem;
-					}
-
-			        .extra-item {
-						            background: rgba(43, 138, 247, 0.1);
-						            border: 1px solid rgba(43, 138, 247, 0.2);
-						            border-radius: 10px;
-						            padding: 1.2rem;
-						            text-align: center;
-					}
-
-			        .extra-label {
-						            font-size: 0.85rem;
-						            color: var(--text-secondary);
-						            font-weight: 600;
-						            margin-bottom: 0.5rem;
-						            text-transform: uppercase;
-						            letter-spacing: 0.5px;
-					}
-
-			        .extra-value {
-						            font-size: 1.8rem;
-						            font-weight: 800;
-						            color: var(--primary);
-					}
-
-			        .extra-emoji {
-						            font-size: 2rem;
-						            margin-top: 0.5rem;
-						            cursor: pointer;
-						            transition: transform 0.2s;
-					}
-
-			        .extra-emoji:hover {
-						            transform: scale(1.2) rotate(10deg);
-					}
-
-			        /* Current Block Progress */
-			        .current-block-section {
-						            display: none;
-						            margin-bottom: 1.5rem;
-					}
-
-			        .current-block-section.active {
-						            display: block;
-					}
-
-			        .current-block-label {
-						            font-size: 0.9rem;
-						            color: var(--text-secondary);
-						            margin-bottom: 0.5rem;
-						            font-weight: 600;
-					}
-
-			        .current-block-bar {
-						            height: 16px;
-						            background: var(--card-bg);
-						            border-radius: 100px;
-						            overflow: hidden;
-						            border: 1px solid var(--card-border);
-					}
-
-			        .current-block-fill {
-						            height: 100%;
-						            background: linear-gradient(90deg, var(--success) 0%, #5200ff 100%);
-						            border-radius: 100px;
-						            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-						            box-shadow: 0 0 20px rgba(65, 198, 91, 0.5);
-					}
-
-			        /* Restroom & Weather */
-			        .alert-box {
-						            border-radius: 12px;
-						            padding: 1.5rem;
-						            margin-bottom: 1.5rem;
-						            font-weight: 600;
-						            font-size: 1.1rem;
-						            text-align: center;
-						            border: 2px solid;
-						            transition: all 0.3s;
-					}
-
-			        .alert-box.available {
-						            background: rgba(65, 198, 91, 0.1);
-						            border-color: var(--success);
-						            color: var(--success);
-					}
-
-			        .alert-box.unavailable {
-						            background: rgba(244, 67, 54, 0.1);
-						            border-color: var(--danger);
-						            color: var(--danger);
-					}
-
-			        .alert-box.info {
-						            background: rgba(43, 138, 247, 0.1);
-						            border-color: var(--primary);
-						            color: var(--primary);
-					}
-
-			        /* Modal */
-			        .notes-modal-bg {
-						            display: none;
-						            position: fixed;
-						            top: 0;
-						            left: 0;
-						            right: 0;
-						            bottom: 0;
-						            background: rgba(0, 0, 0, 0.5);
-						            backdrop-filter: blur(4px);
-						            z-index: 1000;
-						            align-items: center;
-						            justify-content: center;
-					}
-
-			        .notes-modal-bg.show {
-						            display: flex;
-					}
-
-			        .notes-modal {
-						            background: var(--glass-bg);
-						            backdrop-filter: blur(20px);
-						            border: 1px solid var(--glass-border);
-						            border-radius: 16px;
-						            padding: 2rem;
-						            max-width: 500px;
-						            width: 90%;
-						            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-					}
-
-			        .modal-title {
-						            font-size: 1.5rem;
-						            font-weight: 700;
-						            color: var(--primary);
-						            margin-bottom: 1.5rem;
-					}
-
-			        .modal-textarea {
-						            width: 100%;
-						            min-height: 150px;
-						            background: rgba(255, 255, 255, 0.05);
-						            border: 1px solid var(--glass-border);
-						            border-radius: 10px;
-						            padding: 1rem;
-						            color: var(--text-primary);
-						            font-family: inherit;
-						            font-size: 1rem;
-						            margin-bottom: 1.5rem;
-						            resize: vertical;
-					}
-
-			        .modal-textarea::placeholder {
-						            color: var(--text-secondary);
-					}
-
-			        .modal-textarea:focus {
-						            outline: none;
-						            border-color: var(--primary);
-						            background: rgba(43, 138, 247, 0.1);
-					}
-
-			        .modal-buttons {
-						            display: flex;
-						            gap: 1rem;
-					}
-
-			        .modal-btn {
-						            flex: 1;
-						            padding: 0.8rem 1.5rem;
-						            border: none;
-						            border-radius: 8px;
-						            font-weight: 600;
-						            cursor: pointer;
-						            transition: all 0.2s;
-						            font-size: 1rem;
-					}
-
-			        .modal-btn.save {
-						            background: var(--success);
-						            color: white;
-					}
-
-			        .modal-btn.save:hover {
-						            background: #38a04a;
-						            transform: scale(1.02);
-					}
-
-			        .modal-btn.close {
-						            background: rgba(244, 67, 54, 0.2);
-						            color: var(--danger);
-						            border: 1px solid var(--danger);
-					}
-
-			        .modal-btn.close:hover {
-						            background: rgba(244, 67, 54, 0.3);
-					}
-
-			        /* Responsive */
-			        @media (max-width: 768px) {
-						            .header-title {
-										                font-size: 2.5rem;
-									}
-
-						            .navbar-content {
-										                flex-direction: column;
-										                gap: 1rem;
-									}
-
-						            .block {
-										                flex-direction: column;
-										                align-items: flex-start;
-									}
-
-						            .block-right {
-										                width: 100%;
-										                margin-left: 0;
-										                margin-top: 1rem;
-									}
-
-						            .status-extras {
-										                grid-template-columns: 1fr;
-									}
-					}
-
-			        /* Animation for confetti */
-			        @keyframes confettiFall {
-						            to {
-										                transform: translateY(100vh) rotate(720deg);
-										                opacity: 0;
-									}
-					}
-
-			        .confetti {
-						            position: fixed;
-						            pointer-events: none;
-						            animation: confettiFall 3s ease-in forwards;
-					}
+			* { margin: 0; padding: 0; box-sizing: border-box; }
+			:root { --primary: #2b8af7; --primary-dark: #1664bb; --success: #41c65b; --danger: #f44336; --bg-dark: #0f1419; --card-bg: rgba(30, 41, 59, 0.4); --text-primary: #e3e3e3; --text-secondary: #a0aec0; }
+			body { font-family: system-ui, 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, var(--bg-dark) 0%, #1a254f 50%, var(--bg-dark) 100%); color: var(--text-primary); min-height: 100vh; margin: 0; }
+			.navbar { background: rgba(15, 20, 25, 0.5); backdrop-filter: blur(10px); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+			.navbar-content { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+			.navbar-brand { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+			.navbar-time { color: var(--text-secondary); font-weight: 500; }
+			.navbar-actions { display: flex; gap: 1rem; }
+			.theme-btn, .nav-link { background: rgba(43, 138, 247, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--primary); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; font-size: 0.9rem; text-decoration: none; }
+			.theme-btn:hover, .nav-link:hover { background: rgba(43, 138, 247, 0.2); }
+			.container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+			.header { text-align: center; margin-bottom: 3rem; }
+			.header-title { font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary) 0%, #5200ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+			.progress-section { margin-bottom: 2rem; }
+			.progress-label { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600; }
+			.progress-bar-container { width: 100%; height: 12px; background: var(--card-bg); border-radius: 100px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.2); }
+			.progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary) 0%, #5200ff 100%); border-radius: 100px; transition: width 0.5s; }
+			.schedule-container { display: grid; gap: 1rem; margin-bottom: 3rem; }
+			.schedule-header { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem; }
+			.block { background: var(--card-bg); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
+			.block:hover { background: rgba(43, 138, 247, 0.1); border-color: var(--primary); transform: translateY(-4px); }
+			.block-left { flex: 1; }
+			.block-name { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem; }
+			.block-time { font-size: 0.95rem; color: var(--text-secondary); font-weight: 500; }
+			.block-right { display: flex; gap: 0.8rem; align-items: center; margin-left: 1rem; }
+			.notes-btn { background: var(--primary); color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+			.notes-btn:hover { background: var(--primary-dark); }
+			.notes-indicator { color: var(--success); font-size: 1.2rem; display: none; }
+			.status-card { background: var(--card-bg); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+			.status-title { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 1.5rem; }
+			.status-items { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+			.status-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; background: rgba(43, 138, 247, 0.05); border-radius: 8px; border: 1px solid rgba(43, 138, 247, 0.1); }
+			.status-dot { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--text-secondary); }
+			.status-dot.green { background: var(--success); border-color: var(--success); }
+			.status-dot.orange { background: #f5a623; border-color: #f5a623; }
+			.status-dot.red { background: var(--danger); border-color: var(--danger); }
+			.status-text { font-weight: 500; color: var(--text-primary); }
+			.status-extras { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+			.extra-item { background: rgba(43, 138, 247, 0.1); border: 1px solid rgba(43, 138, 247, 0.2); border-radius: 10px; padding: 1.2rem; text-align: center; }
+			.extra-label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+			.extra-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+			.extra-emoji { font-size: 2rem; margin-top: 0.5rem; cursor: pointer; }
+			.alert-box { border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; font-weight: 600; font-size: 1.1rem; text-align: center; border: 2px solid; transition: all 0.3s; }
+			.alert-box.available { background: rgba(65, 198, 91, 0.1); border-color: var(--success); color: var(--success); }
+			.alert-box.unavailable { background: rgba(244, 67, 54, 0.1); border-color: var(--danger); color: var(--danger); }
+			.alert-box.info { background: rgba(43, 138, 247, 0.1); border-color: var(--primary); color: var(--primary); }
+			.notes-modal-bg { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+			.notes-modal-bg.show { display: flex; }
+			.notes-modal { background: rgba(15, 20, 25, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; max-width: 500px; width: 90%; }
+			.modal-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 1.5rem; }
+			.modal-textarea { width: 100%; min-height: 150px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 1rem; color: var(--text-primary); font-family: inherit; font-size: 1rem; margin-bottom: 1.5rem; }
+			.modal-textarea:focus { outline: none; border-color: var(--primary); background: rgba(43, 138, 247, 0.1); }
+			.modal-buttons { display: flex; gap: 1rem; }
+			.modal-btn { flex: 1; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 1rem; }
+			.modal-btn.save { background: var(--success); color: white; }
+			.modal-btn.close { background: rgba(244, 67, 54, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+			.current-block-section { display: none; margin-bottom: 1.5rem; }
+			.current-block-section.active { display: block; }
+			.current-block-bar { height: 16px; background: var(--card-bg); border-radius: 100px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.2); }
+			.current-block-fill { height: 100%; background: linear-gradient(90deg, var(--success) 0%, #5200ff 100%); border-radius: 100px; transition: width 0.5s; }
+			@media (max-width: 768px) { .header-title { font-size: 2.5rem; } .block { flex-direction: column; align-items: flex-start; } .block-right { width: 100%; margin-left: 0; margin-top: 1rem; } }
 			    </style>
 	</head>
 	<body>
-		    <!-- Navbar -->
 		    <div class="navbar">
 				        <div class="navbar-content">
 							            <div class="navbar-brand">📚 7th Grade Schedule</div>div>
@@ -590,59 +81,42 @@
 			</div>div>
 
 		    <div class="container">
-				        <!-- Header -->
 				        <div class="header">
 							            <h1 class="header-title">Schedule</h1>h1>
-							            <p class="header-subtitle" id="day-info">Today's Classes</p>p>
-
-							            <!-- Progress -->
 							            <div class="progress-section">
 											                <div class="progress-label">Day Progress</div>div>
 											                <div class="progress-bar-container">
 																                    <div class="progress-bar" id="progress-bar"></div>div>
 															</div>div>
 										</div>div>
-							            <div class="encouragement" id="encouragement"></div>div>
 						</div>div>
 
-				        <!-- Schedule -->
 				        <div class="schedule-container">
 							            <h2 class="schedule-header">Today's Blocks</h2>h2>
 							            <div id="schedule"></div>div>
 						</div>div>
 
-				        <!-- Status Section -->
 				        <div class="status-card">
 							            <h2 class="status-title">Status</h2>h2>
-
-							            <!-- Current Block Progress -->
 							            <div class="current-block-section" id="current-block-section">
-											                <div class="current-block-label">Current Block Progress</div>div>
+											                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Current Block Progress</div>div>
 											                <div class="current-block-bar">
 																                    <div class="current-block-fill" id="current-block-fill"></div>div>
 															</div>div>
 											                <div style="height: 1rem;"></div>div>
 										</div>div>
-
-							            <!-- Status Items -->
 							            <div class="status-items" id="status-blocks"></div>div>
-
-							            <!-- Status Extras -->
 							            <div class="status-extras" id="status-extras"></div>div>
 						</div>div>
 
-				        <!-- Restroom Status -->
 				        <div class="alert-box unavailable" id="restroom-status">🚪 Restroom: Unavailable</div>div>
-
-				        <!-- Weather HAC -->
 				        <div class="alert-box info" id="weather-hac">☀️ Checking weather for HAC...</div>div>
 			</div>div>
 
-		    <!-- Notes Modal -->
 		    <div class="notes-modal-bg" id="notes-modal-bg">
 				        <div class="notes-modal">
 							            <h2 class="modal-title" id="notes-modal-title">Notes</h2>h2>
-							            <textarea class="modal-textarea" id="notes-modal-text" placeholder="Add your notes here..."></textarea>
+							            <textarea class="modal-textarea" id="notes-modal-text" placeholder="Add your notes..."></textarea>
 							            <div class="modal-buttons">
 											                <button class="modal-btn close" id="close-notes-btn">Close</button>button>
 											                <button class="modal-btn save" id="save-notes-btn">Save</button>button>
@@ -651,358 +125,148 @@
 			</div>div>
 
 		    <script>
-				        const schedule = [
-							{ name: "Homeroom", start: "9:15", end: "9:55" },
-							{ name: "Electives", start: "9:58", end: "10:58" },
-							{ name: "3rd Block", start: "11:01", end: "12:01" },
-							{ name: "4th Block", start: "12:04", end: "13:04" },
-							{ name: "Lunch & HAC", start: "13:07", end: "14:07" },
-							{ name: "5th Block", start: "14:10", end: "15:10" },
-							{ name: "6th Block", start: "15:13", end: "16:13" },
-							{ name: "Dismissal", start: "16:13", end: "17:00" }
-							        ];
-
-				        const encouragements = [
-							            "You got this! 🚀", "Keep up the great work! 💪", "You're making awesome progress! 🌟",
-							            "Stay positive and keep learning! 😎", "Take a deep breath and crush it! 🐉",
-							            "High five, you're doing great! 🙌", "Almost there! Keep going! 🏁",
-							            "Wow! You're on fire today! 🔥", "Proud of you! 🎉", "You are unstoppable! 🦸‍♂️"
-							        ];
-
-				        const emojiArr = ["😃","💪","🚀","🤩","😎","🌈","🔥","🎯","🍀","🦄","🌟","🏆"];
-
-				        // Utility Functions
-				        function to12h(time) {
-							            let [h, m] = time.split(":").map(Number);
-							            let ampm = h >= 12 ? "PM" : "AM";
-							            let h12 = h % 12 || 12;
-							            return `${h12}:${String(m).padStart(2,"0")} ${ampm}`;
-						}
-
-				        function timeToSeconds(time) {
-							            const [hours, minutes] = time.split(":").map(Number);
-							            return hours * 3600 + minutes * 60;
-						}
-
-				        function formatTime(secs) {
-							            if (secs <= 0) return "0m 00s";
-							            const m = Math.floor(secs / 60);
-							            const s = secs % 60;
-							            return `${m}m ${String(s).padStart(2, "0")}s`;
-						}
-
-				        function getDayProgressPercent(nowSecs) {
-							            const start = timeToSeconds(schedule[0].start);
-							            const end = timeToSeconds(schedule[schedule.length-1].end);
-							            if (nowSecs <= start) return 0;
-							            if (nowSecs >= end) return 100;
-							            return ((nowSecs - start) / (end - start)) * 100;
-						}
-
-				        // Theme Switcher
-				        const themeSwitcher = document.getElementById('theme-switcher');
-				        themeSwitcher.onclick = () => {
-							            document.body.classList.toggle('light');
-							            if (document.body.classList.contains('light')) {
-											                themeSwitcher.innerHTML = '☀️ Theme';
-											                localStorage.setItem('bm-theme', 'light');
-										} else {
-											                themeSwitcher.innerHTML = '🌙 Theme';
-											                localStorage.setItem('bm-theme', 'dark');
+				const schedule = [{ name: "Homeroom", start: "9:15", end: "9:55" }, { name: "Electives", start: "9:58", end: "10:58" }, { name: "3rd Block", start: "11:01", end: "12:01" }, { name: "4th Block", start: "12:04", end: "13:04" }, { name: "Lunch & HAC", start: "13:07", end: "14:07" }, { name: "5th Block", start: "14:10", end: "15:10" }, { name: "6th Block", start: "15:13", end: "16:13" }, { name: "Dismissal", start: "16:13", end: "17:00" }];
+				const encouragements = ["You got this! 🚀", "Keep up the great work! 💪", "You're making awesome progress! 🌟", "Stay positive and keep learning! 😎", "Take a deep breath and crush it! 🐉", "High five, you're doing great! 🙌", "Almost there! Keep going! 🏁", "Wow! You're on fire today! 🔥", "Proud of you! 🎉", "You are unstoppable! 🦸‍♂️"];
+				const emojiArr = ["😃","💪","🚀","🤩","😎","🌈","🔥","🎯","🍀","🦄","🌟","🏆"];
+				function to12h(time) { let [h, m] = time.split(":").map(Number); let ampm = h >= 12 ? "PM" : "AM"; let h12 = h % 12 || 12; return `${h12}:${String(m).padStart(2,"0")} ${ampm}`; }
+				function timeToSeconds(time) { const [hours, minutes] = time.split(":").map(Number); return hours * 3600 + minutes * 60; }
+				function formatTime(secs) { if (secs <= 0) return "0m 00s"; const m = Math.floor(secs / 60); const s = secs % 60; return `${m}m ${String(s).padStart(2, "0")}s`; }
+				function getDayProgressPercent(nowSecs) { const start = timeToSeconds(schedule[0].start); const end = timeToSeconds(schedule[schedule.length-1].end); if (nowSecs <= start) return 0; if (nowSecs >= end) return 100; return ((nowSecs - start) / (end - start)) * 100; }
+				const themeSwitcher = document.getElementById('theme-switcher');
+				themeSwitcher.onclick = () => { document.body.classList.toggle('light'); if (document.body.classList.contains('light')) { themeSwitcher.innerHTML = '☀️ Theme'; localStorage.setItem('bm-theme', 'light'); } else { themeSwitcher.innerHTML = '🌙 Theme'; localStorage.setItem('bm-theme', 'dark'); } };
+				(function() { const theme = localStorage.getItem('bm-theme'); if (theme === 'light') { document.body.classList.add('light'); themeSwitcher.innerHTML = '☀️ Theme'; } })();
+				function getNotesKey(blockName) { return 'bm-note-' + encodeURIComponent(blockName); }
+				function getBlockNote(blockName) { return localStorage.getItem(getNotesKey(blockName)) || ''; }
+				function setBlockNote(blockName, text) { localStorage.setItem(getNotesKey(blockName), text); }
+				const scheduleDiv = document.getElementById("schedule");
+				schedule.forEach((block) => { const blockDiv = document.createElement("div"); blockDiv.classList.add("block"); blockDiv.innerHTML = `<div class="block-left"><div class="block-name">${block.name}</div><div class="block-time">${to12h(block.start)} - ${to12h(block.end)}</div></div><div class="block-right"><button class="notes-btn" data-block="${block.name}">📝 Notes</button><span class="notes-indicator">✔</span></div>`; scheduleDiv.appendChild(blockDiv); });
+				const notesModalBg = document.getElementById('notes-modal-bg');
+				const notesModalText = document.getElementById('notes-modal-text');
+				const notesModalTitle = document.getElementById('notes-modal-title');
+				let currNotesBlock = '';
+				scheduleDiv.addEventListener('click', (e) => { if (e.target.classList.contains('notes-btn')) { currNotesBlock = e.target.getAttribute('data-block'); notesModalTitle.textContent = `Notes for ${currNotesBlock}`; notesModalText.value = getBlockNote(currNotesBlock); notesModalBg.classList.add('show'); notesModalText.focus(); } });
+				document.getElementById('close-notes-btn').onclick = () => { notesModalBg.classList.remove('show'); };
+				document.getElementById('save-notes-btn').onclick = () => { setBlockNote(currNotesBlock, notesModalText.value); notesModalBg.classList.remove('show'); updateNotesIndicators(); };
+				notesModalBg.onclick = (e) => { if (e.target === notesModalBg) notesModalBg.classList.remove('show'); };
+				function updateNotesIndicators() { document.querySelectorAll('.notes-btn').forEach(btn => { const block = btn.getAttribute('data-block'); const indicator = btn.parentElement.querySelector('.notes-indicator'); indicator.style.display = getBlockNote(block).trim() ? '' : 'none'; }); }
+				function updateNavbarTime() { const now = new Date(); const h = String(now.getHours()).padStart(2, '0'); const m = String(now.getMinutes()).padStart(2, '0'); const ampm = now.getHours() >= 12 ? 'PM' : 'AM'; document.getElementById('navbar-time').textContent = `${h}:${m} ${ampm}`; }
+				setInterval(updateNavbarTime, 1000);
+				updateNavbarTime();
+				let prevBlockIndex = -1;
+				function updateTimersAndStatus() {
+					  const now = new Date();
+					  const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+					  document.getElementById('progress-bar').style.width = getDayProgressPercent(currentSeconds) + '%';
+					  let currentBlock = null;
+					  let currentBlockIndex = -1;
+					  let blockStart = null, blockEnd = null;
+					  let timeLeft = null;
+					  const statusDiv = document.getElementById('status-blocks');
+					  statusDiv.innerHTML = '';
+					  schedule.forEach((block, index) => {
+						      const start = timeToSeconds(block.start);
+						      const end = timeToSeconds(block.end);
+						      let dotClass = 'orange';
+						      if (currentSeconds >= start && currentSeconds < end) {
+								        currentBlock = block;
+								        currentBlockIndex = index;
+								        timeLeft = end - currentSeconds;
+								        dotClass = 'green';
+								        blockStart = start;
+								        blockEnd = end;
+							  } else if (currentSeconds >= end) {
+								        dotClass = 'red';
+							  }
+						      const statusItem = document.createElement('div');
+						      statusItem.classList.add('status-item');
+						      statusItem.innerHTML = `<span class="status-dot ${dotClass}"></span><span class="status-text">${block.name}</span>`;
+						      statusDiv.appendChild(statusItem);
+					  });
+					  const currentBlockSection = document.getElementById('current-block-section');
+					  if (currentBlock && blockStart !== null && blockEnd !== null && blockEnd > blockStart) {
+						      const total = blockEnd - blockStart;
+						      const elapsed = currentSeconds - blockStart;
+						      const percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
+						      document.getElementById('current-block-fill').style.width = percent + '%';
+						      currentBlockSection.classList.add('active');
+					  } else {
+						      currentBlockSection.classList.remove('active');
+					  }
+					  if (prevBlockIndex !== -1 && prevBlockIndex !== currentBlockIndex) {
+						      const eDiv = document.querySelector('.header');
+						      eDiv.innerHTML += '<div style="color: var(--primary); font-weight: 600;">' + encouragements[Math.floor(Math.random() * encouragements.length)] + '</div>';
+					  }
+					  prevBlockIndex = currentBlockIndex;
+					  const restroomDisplay = document.getElementById('restroom-status');
+					  if (currentBlock) {
+						      const blockDuration = blockEnd - blockStart;
+						      const timeSinceStart = blockDuration - timeLeft;
+						      const timeUntilEnd = timeLeft;
+						      if (timeSinceStart < 600 || timeUntilEnd < 600) {
+								        restroomDisplay.className = 'alert-box unavailable';
+								        restroomDisplay.innerHTML = '🚪 Restroom: Unavailable';
+							  } else {
+								        restroomDisplay.className = 'alert-box available';
+								        restroomDisplay.innerHTML = '✅ Restroom: Available';
+							  }
+						      document.title = `${currentBlock.name} - ${formatTime(timeLeft)} remaining`;
+					  } else {
+						      restroomDisplay.className = 'alert-box unavailable';
+						      restroomDisplay.innerHTML = '🚪 Restroom: Unavailable';
+						      document.title = 'Schedule';
+					  }
+					  updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now);
+				}
+				function updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now) {
+					  const extras = document.getElementById('status-extras');
+					  let timeLeftStr = currentBlock ? (timeLeft > 0 ? `${Math.floor(timeLeft/3600)}h ${Math.floor((timeLeft%3600)/60)}m ${String(timeLeft%60).padStart(2,"0")}s` : 'Done') : 'N/A';
+					  const totalSecs = timeToSeconds(schedule[schedule.length-1].end) - timeToSeconds(schedule[0].start);
+					  const nowSecs = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+					  let progress = (nowSecs - timeToSeconds(schedule[0].start)) / totalSecs * 100;
+					  progress = Math.max(0, Math.min(100, progress));
+					  let randomEmoji = localStorage.getItem("status-random-emoji") || emojiArr[0];
+					  extras.innerHTML = `<div class="extra-item"><div class="extra-label">Current Block</div><div class="extra-value">${currentBlock ? currentBlock.name : 'None'}</div></div><div class="extra-item"><div class="extra-label">Time Left</div><div class="extra-value" style="font-size: 1.2rem;">${timeLeftStr}</div></div><div class="extra-item"><div class="extra-label">Day Progress</div><div class="extra-value">${progress.toFixed(1)}%</div></div><div class="extra-item"><div class="extra-label">Motivation</div><div class="extra-emoji" id="emoji-btn" style="cursor: pointer;">${randomEmoji}</div></div>`;
+					  document.getElementById('emoji-btn').onclick = () => { randomEmoji = emojiArr[Math.floor(Math.random()*emojiArr.length)]; localStorage.setItem("status-random-emoji", randomEmoji); updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now); };
+				}
+				setInterval(updateTimersAndStatus, 1000);
+				updateTimersAndStatus();
+				updateNotesIndicators();
+				const WEATHER_LAT = 35.39602;
+				const WEATHER_LON = -80.92412;
+				const HAC_BLOCK = schedule.find(b => b.name.toLowerCase().includes("hac")) || { start: "13:07", end: "14:07" };
+				async function fetchWeatherHAC() {
+					  const weatherBox = document.getElementById("weather-hac");
+					  try {
+						      const params = `latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}&hourly=precipitation_probability,precipitation&daily=precipitation_sum&forecast_days=1&timezone=auto`;
+						      const resp = await fetch("https://api.open-meteo.com/v1/forecast?" + params);
+						      const data = await resp.json();
+						      let [starth, startm] = HAC_BLOCK.start.split(':').map(Number);
+						      let [endh, endm] = HAC_BLOCK.end.split(':').map(Number);
+						      let rainDuringHac = false;
+						      let maxProb = 0;
+						      for(let i=0; i<data.hourly.time.length; ++i) {
+								        const t = new Date(data.hourly.time[i]);
+								        const hour = t.getHours();
+								        const min = t.getMinutes();
+								        const inHac = (hour > starth || (hour === starth && min >= startm)) && (hour < endh || (hour === endh && min <= endm));
+								        if (inHac && (data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05)) {
+											        rainDuringHac = true;
+											        maxProb = Math.max(maxProb, data.hourly.precipitation_probability[i]);
 										}
-						};
-
-				        (function() {
-							            const theme = localStorage.getItem('bm-theme');
-							            if (theme === 'light') {
-											                document.body.classList.add('light');
-											                themeSwitcher.innerHTML = '☀️ Theme';
-										}
-						})();
-
-				        // Notes Management
-				        function getNotesKey(blockName) {
-							            return 'bm-note-' + encodeURIComponent(blockName);
-						}
-
-				        function getBlockNote(blockName) {
-							            return localStorage.getItem(getNotesKey(blockName)) || '';
-						}
-
-				        function setBlockNote(blockName, text) {
-							            localStorage.setItem(getNotesKey(blockName), text);
-						}
-
-				        // Build Schedule
-				        const scheduleDiv = document.getElementById("schedule");
-				        schedule.forEach((block) => {
-							            const blockDiv = document.createElement("div");
-							            blockDiv.classList.add("block");
-							            blockDiv.innerHTML = `
-										                <div class="block-left">
-														                    <div class="block-name">${block.name}</div>
-																			                    <div class="block-time">${to12h(block.start)} - ${to12h(block.end)}</div>
-																								                </div>
-																												                <div class="block-right">
-																																                    <button class="notes-btn" data-block="${block.name}">📝 Notes</button>
-																																					                    <span class="notes-indicator">✔</span>
-																																										                </div>
-																																														            `;
-							            scheduleDiv.appendChild(blockDiv);
-						});
-
-				        // Notes Modal
-				        const notesModalBg = document.getElementById('notes-modal-bg');
-				        const notesModalText = document.getElementById('notes-modal-text');
-				        const notesModalTitle = document.getElementById('notes-modal-title');
-				        let currNotesBlock = '';
-
-				        scheduleDiv.addEventListener('click', (e) => {
-							            if (e.target.classList.contains('notes-btn')) {
-											                currNotesBlock = e.target.getAttribute('data-block');
-											                notesModalTitle.textContent = `Notes for ${currNotesBlock}`;
-											                notesModalText.value = getBlockNote(currNotesBlock);
-											                notesModalBg.classList.add('show');
-											                notesModalText.focus();
-										}
-						});
-
-				        document.getElementById('close-notes-btn').onclick = () => {
-							            notesModalBg.classList.remove('show');
-						};
-
-				        document.getElementById('save-notes-btn').onclick = () => {
-							            setBlockNote(currNotesBlock, notesModalText.value);
-							            notesModalBg.classList.remove('show');
-							            updateNotesIndicators();
-						};
-
-				        notesModalBg.onclick = (e) => {
-							            if (e.target === notesModalBg) notesModalBg.classList.remove('show');
-						};
-
-				        function updateNotesIndicators() {
-							            document.querySelectorAll('.notes-btn').forEach(btn => {
-											                const block = btn.getAttribute('data-block');
-											                const indicator = btn.parentElement.querySelector('.notes-indicator');
-											                indicator.style.display = getBlockNote(block).trim() ? '' : 'none';
-										});
-						}
-
-				        // Confetti
-				        function throwConfetti() {
-							            for (let i = 0; i < 30; i++) {
-											                const conf = document.createElement('div');
-											                conf.className = 'confetti';
-											                conf.style.left = Math.random() * 100 + '%';
-											                conf.style.background = `hsl(${Math.random()*360},80%,60%)`;
-											                conf.style.width = Math.random() * 10 + 5 + 'px';
-											                conf.style.height = conf.style.width;
-											                conf.style.animationDelay = Math.random() * 0.5 + 's';
-											                document.body.appendChild(conf);
-											                setTimeout(() => conf.remove(), 3000);
-										}
-						}
-
-				        // Update Navbar Time
-				        function updateNavbarTime() {
-							            const now = new Date();
-							            const h = String(now.getHours()).padStart(2, '0');
-							            const m = String(now.getMinutes()).padStart(2, '0');
-							            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-							            document.getElementById('navbar-time').textContent = `${h}:${m} ${ampm}`;
-						}
-				        setInterval(updateNavbarTime, 1000);
-				        updateNavbarTime();
-
-				        // Main Update Loop
-				        let prevBlockIndex = -1;
-				        let time20mConfetti = {};
-
-				        function updateTimersAndStatus() {
-							            const now = new Date();
-							            const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-
-							            // Day Progress
-							            document.getElementById('progress-bar').style.width = getDayProgressPercent(currentSeconds) + '%';
-
-							            let currentBlock = null;
-							            let currentBlockIndex = -1;
-							            let blockStart = null, blockEnd = null;
-							            let timeLeft = null;
-
-							            // Update Status Blocks
-							            const statusDiv = document.getElementById('status-blocks');
-							            statusDiv.innerHTML = '';
-
-							            schedule.forEach((block, index) => {
-											                const start = timeToSeconds(block.start);
-											                const end = timeToSeconds(block.end);
-											                let dotClass = 'orange';
-
-											                if (currentSeconds >= start && currentSeconds < end) {
-																                    currentBlock = block;
-																                    currentBlockIndex = index;
-																                    timeLeft = end - currentSeconds;
-																                    dotClass = 'green';
-																                    blockStart = start;
-																                    blockEnd = end;
-															} else if (currentSeconds >= end) {
-																                    dotClass = 'red';
-															}
-
-											                const statusItem = document.createElement('div');
-											                statusItem.classList.add('status-item');
-											                statusItem.innerHTML = `
-															                    <span class="status-dot ${dotClass}"></span>
-																				                    <span class="status-text">${block.name}</span>
-																									                `;
-											                statusDiv.appendChild(statusItem);
-										});
-
-							            // Current Block Progress
-							            const currentBlockSection = document.getElementById('current-block-section');
-							            if (currentBlock && blockStart !== null && blockEnd !== null && blockEnd > blockStart) {
-											                const total = blockEnd - blockStart;
-											                const elapsed = currentSeconds - blockStart;
-											                const percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
-											                document.getElementById('current-block-fill').style.width = percent + '%';
-											                currentBlockSection.classList.add('active');
-										} else {
-											                currentBlockSection.classList.remove('active');
-										}
-
-							            // Block Transitions
-							            if (prevBlockIndex !== -1 && prevBlockIndex !== currentBlockIndex) {
-											                throwConfetti();
-											                const eDiv = document.getElementById('encouragement');
-											                eDiv.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
-											                time20mConfetti = {};
-										}
-							            prevBlockIndex = currentBlockIndex;
-
-							            // Restroom Status
-							            const restroomDisplay = document.getElementById('restroom-status');
-							            if (currentBlock) {
-											                const blockDuration = blockEnd - blockStart;
-											                const timeSinceStart = blockDuration - timeLeft;
-											                const timeUntilEnd = timeLeft;
-
-											                if (timeSinceStart < 600 || timeUntilEnd < 600) {
-																                    restroomDisplay.className = 'alert-box unavailable';
-																                    restroomDisplay.innerHTML = '🚪 Restroom: Unavailable';
-															} else {
-																                    restroomDisplay.className = 'alert-box available';
-																                    restroomDisplay.innerHTML = '✅ Restroom: Available';
-															}
-
-											                document.title = `${currentBlock.name} - ${formatTime(timeLeft)} remaining`;
-
-											                // 20-minute confetti
-											                if (blockStart !== null && (currentSeconds - blockStart >= 1200) && !time20mConfetti[currentBlockIndex]) {
-																                    throwConfetti();
-																                    time20mConfetti[currentBlockIndex] = true;
-															}
-										} else {
-											                restroomDisplay.className = 'alert-box unavailable';
-											                restroomDisplay.innerHTML = '🚪 Restroom: Unavailable';
-											                document.title = 'Schedule';
-										}
-
-							            // Status Extras
-							            updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now);
-						}
-
-				        function updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now) {
-							            const extras = document.getElementById('status-extras');
-
-							            let timeLeftStr = currentBlock ? (timeLeft > 0 ? 
-																		                  `${Math.floor(timeLeft/3600)}h ${Math.floor((timeLeft%3600)/60)}m ${String(timeLeft%60).padStart(2,"0")}s` : 
-																		                  'Done') : 'N/A';
-
-							            const totalSecs = timeToSeconds(schedule[schedule.length-1].end) - timeToSeconds(schedule[0].start);
-							            const nowSecs = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
-							            let progress = (nowSecs - timeToSeconds(schedule[0].start)) / totalSecs * 100;
-							            progress = Math.max(0, Math.min(100, progress));
-
-							            let randomEmoji = localStorage.getItem("status-random-emoji") || emojiArr[0];
-
-							            extras.innerHTML = `
-										                <div class="extra-item">
-														                    <div class="extra-label">Current Block</div>
-																			                    <div class="extra-value">${currentBlock ? currentBlock.name : 'None'}</div>
-																								                </div>
-																												                <div class="extra-item">
-																																                    <div class="extra-label">Time Left</div>
-																																					                    <div class="extra-value" style="font-size: 1.2rem;">${timeLeftStr}</div>
-																																										                </div>
-																																														                <div class="extra-item">
-																																																		                    <div class="extra-label">Day Progress</div>
-																																																							                    <div class="extra-value">${progress.toFixed(1)}%</div>
-																																																												                </div>
-																																																																                <div class="extra-item">
-																																																																				                    <div class="extra-label">Motivation</div>
-																																																																									                    <div class="extra-emoji" id="emoji-btn">${randomEmoji}</div>
-																																																																														                </div>
-																																																																																		            `;
-
-							            document.getElementById('emoji-btn').onclick = () => {
-											                randomEmoji = emojiArr[Math.floor(Math.random()*emojiArr.length)];
-											                localStorage.setItem("status-random-emoji", randomEmoji);
-											                updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now);
-										};
-						}
-
-				        setInterval(updateTimersAndStatus, 1000);
-				        updateTimersAndStatus();
-				        updateNotesIndicators();
-
-				        // Weather HAC
-				        const WEATHER_LAT = 35.39602;
-				        const WEATHER_LON = -80.92412;
-				        const HAC_BLOCK = schedule.find(b => b.name.toLowerCase().includes("hac")) || { start: "13:07", end: "14:07" };
-
-				        async function fetchWeatherHAC() {
-							            const weatherBox = document.getElementById("weather-hac");
-							            try {
-											                const params = `latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}&hourly=precipitation_probability,precipitation&daily=precipitation_sum&forecast_days=1&timezone=auto`;
-											                const resp = await fetch("https://api.open-meteo.com/v1/forecast?" + params);
-											                const data = await resp.json();
-
-											                let [starth, startm] = HAC_BLOCK.start.split(':').map(Number);
-											                let [endh, endm] = HAC_BLOCK.end.split(':').map(Number);
-
-											                let rainDuringHac = false;
-											                let maxProb = 0;
-
-											                for(let i=0; i<data.hourly.time.length; ++i) {
-																                    const t = new Date(data.hourly.time[i]);
-																                    const hour = t.getHours();
-																                    const min = t.getMinutes();
-
-																                    const inHac = (hour > starth || (hour === starth && min >= startm)) && 
-																						                                  (hour < endh || (hour === endh && min <= endm));
-
-																                    if (inHac && (data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05)) {
-																						                        rainDuringHac = true;
-																						                        maxProb = Math.max(maxProb, data.hourly.precipitation_probability[i]);
-																					}
-															}
-
-											                if (rainDuringHac) {
-																                    weatherBox.className = 'alert-box unavailable';
-																                    weatherBox.innerHTML = `☔ Rain during HAC (${maxProb}% chance)`;
-															} else {
-																                    weatherBox.className = 'alert-box available';
-																                    weatherBox.innerHTML = '☀️ Clear weather for HAC!';
-															}
-										} catch(e) {
-											                weatherBox.className = 'alert-box info';
-											                weatherBox.innerHTML = '⚠️ Weather check unavailable';
-										}
-						}
-
-				        fetchWeatherHAC();
+							  }
+						      if (rainDuringHac) {
+								        weatherBox.className = 'alert-box unavailable';
+								        weatherBox.innerHTML = `☔ Rain during HAC (${maxProb}% chance)`;
+							  } else {
+								        weatherBox.className = 'alert-box available';
+								        weatherBox.innerHTML = '☀️ Clear weather for HAC!';
+							  }
+					  } catch(e) {
+						      weatherBox.className = 'alert-box info';
+						      weatherBox.innerHTML = '⚠️ Weather check unavailable';
+					  }
+				}
+				fetchWeatherHAC();
 			</script>
 	</body>
 </html>html>
