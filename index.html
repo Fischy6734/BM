@@ -1,1390 +1,1012 @@
-
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-<script>
-(function() {
-
-    const socket = io('http://broadcastadmin.fischyweb.com');
-    
-    let messageBubble = null;
-    
-
-    function createBubble(message, shutdownNotice) {
-        // Remove existing bubble if any
-        if (messageBubble) {
-            messageBubble.remove();
-        }
-        
-        // Don't create bubble if no message
-        if (!message && !shutdownNotice) return;
-        
-        // Create bubble element
-        messageBubble = document.createElement('div');
-        messageBubble.id = 'ws-message-bubble';
-        
-        // Style the bubble
-        messageBubble.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            max-width: 400px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            z-index: 999999;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            animation: slideIn 0.5s ease-out;
-        `;
-        
-
-        let content = '';
-        if (message) {
-            content += `<div style="font-size: 14px; line-height: 1.6; margin-bottom: ${shutdownNotice ? '12px' : '0'};">${escapeHtml(message)}</div>`;
-        }
-        if (shutdownNotice) {
-            content += `<div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 6px; font-size: 13px; border-left: 3px solid #ffc107;">⚠️ ${escapeHtml(shutdownNotice)}</div>`;
-        }
-        
-
-        content += `<button onclick="this.parentElement.remove()" style="
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255,255,255,0.3);
-            border: none;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-            line-height: 1;
-            transition: background 0.3s;
-        " onmouseover="this.style.background='rgba(255,255,255,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.3)'">×</button>`;
-        
-        messageBubble.innerHTML = content;
-        
-
-        if (!document.getElementById('ws-bubble-styles')) {
-            const style = document.createElement('style');
-            style.id = 'ws-bubble-styles';
-            style.textContent = `
-                @keyframes slideIn {
-                    from {
-                        transform: translateX(450px);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-
-        document.body.appendChild(messageBubble);
-    }
-    
-
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    // Listen for broadcast messages
-    socket.on('broadcast_message', function(data) {
-        console.log('📢 Received broadcast message:', data);
-        createBubble(data.message, data.shutdown_notice);
-    });
-    
-    // Listen for clear message event
-    socket.on('clear_messages', function() {
-        console.log('🗑️ Messages cleared');
-        if (messageBubble) {
-            messageBubble.remove();
-            messageBubble = null;
-        }
-    });
-    
-    // Request last message when connected
-    socket.on('connect', function() {
-        console.log('✅ Connected to WebSocket server');
-        socket.emit('request_last_message');
-    });
-    
-    // Receive last message (for persistence)
-    socket.on('last_message', function(data) {
-        if (data.message || data.shutdown_notice) {
-            createBubble(data.message, data.shutdown_notice);
-        }
-    });
-    
-    socket.on('disconnect', function() {
-        console.log('❌ Disconnected from WebSocket server');
-    });
-})();
-</script>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
-  <title>School Not Started</title>
-  <style>
-    :root {
-      --primary-bg: #20242a;
-      --secondary-bg: #252a33;
-      --accent: #2b8af7;
-      --block-bg: #23272e;
-      --dot-green: #41c65b;
-      --dot-orange: #f5a623;
-      --dot-red: #f44336;
-      --focus: #e3e3e3;
-      --progress-bar: #2b8af7;
-      --block-progress-bg: #2c3139;
-      --block-progress-fill: #41c65b;
-      --rainbow: none;
-      --fancy-glow: none;
-    }
-	  /* Animation keyframes */
-@keyframes slideInFromTop {
-  from {
-    transform: translate(-50%, -100%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
-}
+	<head>
+		    <meta charset="UTF-8">
+		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		    <title>7th Grade Schedule</title>
+	    <style>
+			        * {
+						            margin: 0;
+						            padding: 0;
+						            box-sizing: border-box;
+					}
 
-/* Base notification styles */
-.admin-sdk-notification {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translate(-50%, -100%); /* Start position above the viewport */
-  max-width: 400px;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 16px 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  z-index: 999999 !important;
-  color: white;
-  opacity: 0; /* Initially hidden */
-  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-}
+			        :root {
+						            --primary: #2b8af7;
+						            --primary-dark: #1664bb;
+						            --success: #41c65b;
+						            --warning: #f5a623;
+						            --danger: #f44336;
+						            --bg-dark: #0f1419;
+						            --bg-darker: #0a0e13;
+						            --card-bg: rgba(30, 41, 59, 0.4);
+						            --card-border: rgba(148, 163, 184, 0.2);
+						            --text-primary: #e3e3e3;
+						            --text-secondary: #a0aec0;
+						            --glass-bg: rgba(15, 20, 25, 0.5);
+						            --glass-border: rgba(255, 255, 255, 0.1);
+					}
 
-/* Display animation */
-.admin-sdk-notification.show {
-  transform: translate(-50%, 0); /* End position centered at the top */
-  opacity: 1;
-}
+			        body {
+						            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+						            background: linear-gradient(135deg, var(--bg-darker) 0%, #1a254f 50%, var(--bg-dark) 100%);
+						            color: var(--text-primary);
+						            min-height: 100vh;
+						            overflow-x: hidden;
+						            position: relative;
+					}
 
-/* Notification contents */
-.admin-sdk-notification-header {
-  font-size: 14px;
-  margin-bottom: 8px;
-  color: #60a5fa;
-}
+			        /* Animated background */
+			        body::before {
+						            content: '';
+						            position: fixed;
+						            top: 0;
+						            left: 0;
+						            width: 200%;
+						            height: 200%;
+						            background: radial-gradient(circle at 20% 50%, rgba(43, 138, 247, 0.1) 0%, transparent 50%),
+										                        radial-gradient(circle at 80% 80%, rgba(65, 198, 91, 0.05) 0%, transparent 50%);
+						            animation: float 15s ease-in-out infinite;
+						            pointer-events: none;
+						            z-index: -1;
+					}
 
-.admin-sdk-notification-message {
-  font-size: 16px;
-  line-height: 1.4;
-}
+			        @keyframes float {
+						            0%, 100% { transform: translate(0, 0); }
+						            25% { transform: translate(50px, -50px); }
+						            50% { transform: translate(-30px, 30px); }
+						            75% { transform: translate(30px, 50px); }
+					}
 
-/* Light mode adaptations */
-@media (prefers-color-scheme: light) {
-  .admin-sdk-notification {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #000;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-  }
-  
-  .admin-sdk-notification-header {
-    color: #2563eb;
-  }
-}
+			        /* Navbar */
+			        .navbar {
+						            background: var(--glass-bg);
+						            backdrop-filter: blur(10px);
+						            border-bottom: 1px solid var(--glass-border);
+						            padding: 1rem 2rem;
+						            position: sticky;
+						            top: 0;
+						            z-index: 100;
+						            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+					}
 
-    body {
-      font-family: system-ui, 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(120deg, #191c22 60%, #23272e 100%);
-      color: #e3e3e3;
-      margin: 0;
-      padding: 0;
-      transition: background 0.4s, color 0.4s;
-    }
-    body.light {
-      background: #f5f7fa;
-      color: #23272e;
-    }
-    .container {
-      max-width: 700px;
-      margin: 30px auto;
-      padding: 28px 22px 18px 22px;
-      background: var(--primary-bg);
-      border-radius: 14px;
-      box-shadow: 0 2px 12px 0 rgba(20,24,32,0.27);
-      position: relative;
-      transition: background 0.4s;
-    }
-    body.light .container {
-      background: #fff;
-      color: #23272e;
-      box-shadow: 0 2px 12px 0 #e5e8ec;
-    }
-    .theme-switcher {
-      position: absolute;
-      top: 24px;
-      right: 30px;
-      background: var(--block-bg);
-      border: none;
-      padding: 7px 18px;
-      border-radius: 7px;
-      color: var(--accent);
-      font-size: 1em;
-      cursor: pointer;
-      font-weight: 600;
-      box-shadow: none;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.light .theme-switcher {
-      background: #e9ecf3;
-      color: #222;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 28px;
-      font-size: 2.6rem;
-      color: var(--accent);
-      letter-spacing: 2px;
-      text-shadow: none;
-      font-weight: 700;
-      background: none;
-      -webkit-background-clip: unset;
-      -webkit-text-fill-color: unset;
-      background-clip: unset;
-    }
-    .progress-bar-container {
-      width: 100%;
-      background: #242a33;
-      height: 14px;
-      border-radius: 7px;
-      margin-bottom: 18px;
-      overflow: hidden;
-      position: relative;
-      box-shadow: none;
-    }
-    body.light .progress-bar-container {
-      background: #e0e3ee;
-    }
-    .progress-bar {
-      height: 100%;
-      background: var(--progress-bar);
-      width: 0%;
-      transition: width 0.7s cubic-bezier(.44,2,.28,1);
-      box-shadow: none;
-    }
-    .encouragement {
-      text-align: center;
-      margin: 14px 0 0 0;
-      font-size: 1.18rem;
-      font-weight: 600;
-      color: var(--accent);
-      min-height: 1.5em;
-      letter-spacing: 1px;
-      transition: color 0.2s;
-      user-select: none;
-      text-shadow: none;
-      animation: none;
-      opacity: 0.92;
-    }
-    .schedule-header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: inherit;
-      padding: 12px 0 8px 0;
-      font-size: 1.13rem;
-      color: #7fa9ce;
-      font-weight: 600;
-      border-bottom: 1px solid #2d343e;
-      margin-bottom: 8px;
-    }
-    .schedule {
-      margin-bottom: 25px;
-    }
-    .block {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      background: var(--block-bg);
-      padding: 14px 18px;
-      border-radius: 9px;
-      box-shadow: 0 1px 4px #0001;
-      font-size: 1.16rem;
-      transition: background 0.2s;
-      position: relative;
-      border-left: 5px solid transparent;
-      border-bottom: 1px solid #23272e;
-    }
-    body.light .block {
-      background: #f6f8fa;
-      border-bottom: 1px solid #e2e5f1;
-    }
-    .block:hover, .block:focus-within {
-      background: var(--secondary-bg);
-      border-left: 5px solid var(--accent);
-      box-shadow: 0 3px 12px #2b8af711;
-      z-index: 2;
-    }
-    body.light .block:hover, body.light .block:focus-within {
-      background: #e3e8ee;
-    }
-    .block-time {
-      font-size: 1.05em;
-      color: #7fa9ce;
-      margin-left: 7px;
-      font-family: system-ui, 'Segoe UI', Arial, sans-serif;
-      letter-spacing: 1px;
-      font-weight: 600;
-    }
-    .notes-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      font-size: 0.97em;
-      padding: 3px 10px;
-      margin-left: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.2s;
-      box-shadow: none;
-    }
-    .notes-btn:hover {
-      background: #1664bb;
-      color: #fff;
-    }
-    .notes-modal-bg {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(26,28,32,0.50);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .notes-modal {
-      background: #22262c;
-      color: #e3e3e3;
-      border-radius: 12px;
-      padding: 25px 24px 18px 24px;
-      min-width: 300px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.16);
-      max-width: 90vw;
-      border: 2px solid #232a30;
-    }
-    .notes-modal h2 {
-      margin: 0 0 14px 0;
-      font-size: 1.2rem;
-      color: var(--accent);
-    }
-    .notes-modal textarea {
-      width: 100%;
-      min-height: 60px;
-      border-radius: 6px;
-      border: 1px solid #475065;
-      font-size: 1.05em;
-      padding: 7px;
-      margin-bottom: 12px;
-      resize: vertical;
-      background: #23272e;
-      color: #e3e3e3;
-    }
-    .notes-modal .close-notes {
-      background: #f44336;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 0.97em;
-      padding: 4px 12px;
-      margin-right: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .notes-modal .save-notes {
-      background: #41c65b;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 0.97em;
-      padding: 4px 12px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .notes-indicator {
-      margin-left: 7px;
-      font-size: 1.05em;
-      color: #41c65b;
-      vertical-align: middle;
-    }
-    .status {
-      margin-top: 20px;
-      padding: 10px;
-      background: var(--block-bg);
-      border-radius: 8px;
-      box-shadow: 0 1px 3px #0001;
-      position: relative;
-      z-index: 1;
-    }
-    body.light .status {
-      background: #f6f8fa;
-    }
-    .status h2 {
-      font-size: 1.25rem;
-      color: var(--accent);
-      margin: 0 0 12px 0;
-      border-bottom: 1px solid #2d343e;
-      padding-bottom: 4px;
-    }
-    .status-block {
-      display: flex;
-      align-items: center;
-      margin-bottom: 9px;
-      font-size: 1.06rem;
-      letter-spacing: 0.5px;
-      position: relative;
-    }
-    .dot {
-      width: 19px;
-      height: 19px;
-      margin-right: 13px;
-      border-radius: 50%;
-      display: inline-block;
-      position: relative;
-      transition: border 0.18s;
-      border: 2px solid transparent;
-    }
-    .dot.green {
-      background: var(--dot-green);
-    }
-    .dot.orange {
-      background: var(--dot-orange);
-      cursor: pointer;
-    }
-    .dot.red {
-      background: var(--dot-red);
-    }
-    .dot:focus, .dot:hover {
-      outline: 2px solid var(--focus);
-      border: 2px solid var(--accent);
-    }
-    .tooltip {
-      display: block;
-      position: absolute;
-      left: 34px;
-      background: #11141a;
-      color: #e3e3e3;
-      font-size: 0.94rem;
-      padding: 3px 12px;
-      border-radius: 5px;
-      top: 50%;
-      transform: translateY(-50%);
-      white-space: nowrap;
-      box-shadow: 0 2px 10px #0003;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0.98;
-      animation: fadein 0.13s;
-      border: 1px solid #313b4c;
-    }
-    @keyframes fadein {
-      from { opacity: 0; }
-      to { opacity: 0.98; }
-    }
-    .current-block-progress-wrapper {
-      margin: 16px 0 14px 0;
-      padding: 1px 0;
-    }
-    .current-block-progress-label {
-      font-size: 1em;
-      color: var(--accent);
-      font-weight: 600;
-      margin-bottom: 4px;
-      margin-left: 2px;
-    }
-    .current-block-progress-bar-bg {
-      width: 100%;
-      background: var(--block-progress-bg);
-      height: 13px;
-      border-radius: 7px;
-      overflow: hidden;
-      position: relative;
-      margin-top: 4px;
-      box-shadow: 0 1px 6px #0001;
-    }
-    .current-block-progress-bar-fill {
-      background: var(--block-progress-fill);
-      height: 100%;
-      width: 0%;
-      border-radius: 7px;
-      transition: width 0.5s cubic-bezier(.44,2,.28,1);
-    }
-    .status-extras {
-      padding: 7px 0 3px 0;
-      margin-bottom: 2px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px 18px;
-      justify-content: space-between;
-      align-items: flex-start;
-      border-top: 2px dashed var(--accent);
-      border-radius: 7px;
-      margin-top: 16px;
-      background: #232a33;
-    }
-    .status-extra {
-      flex: 1 1 150px;
-      min-width: 140px;
-      margin: 0;
-      background: #262b35;
-      color: var(--accent);
-      border-radius: 8px;
-      padding: 10px 9px 7px 12px;
-      box-shadow: 0 1px 7px #0001;
-      font-size: 1.04em;
-      position: relative;
-      text-align: left;
-      transition: background 0.18s;
-      min-height: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .status-extra.block-time-left {
-      flex: 2 1 320px;
-      font-size: 1.3em;
-      background: #212a36;
-      color: var(--accent);
-      text-align: center;
-      align-items: center;
-      justify-content: center;
-      min-width: 200px;
-      min-height: 65px;
-      box-shadow: 0 3px 18px #0002;
-      letter-spacing: 1.1px;
-    }
-    body.light .status-extra.block-time-left {
-      background: #eaf3fc;
-      color: #2b8af7;
-    }
-    body.light .status-extra {
-      background: #eef4fb;
-      color: #2b8af7;
-    }
-    .status-extra .extra-title {
-      font-size: 0.97em;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 1px;
-      letter-spacing: 0.5px;
-    }
-    .status-extra strong {
-      color: #e3e3e3;
-      font-size: 1.13em;
-    }
-    .status-extra .emoji {
-      font-size: 1.25em;
-      vertical-align: middle;
-      margin-right: 4px;
-    }
-    .status-extra .copy-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.83em;
-      padding: 1px 8px;
-      cursor: pointer;
-      font-weight: 700;
-      margin-left: 9px;
-      margin-top: 2px;
-      transition: background 0.14s;
-    }
-    .status-extra .copy-btn:hover {
-      background: #1664bb;
-    }
-    .status-extra .copied-msg {
-      color: #41c65b;
-      font-size: 0.86em;
-      margin-left: 3px;
-      font-style: italic;
-    }
-    .status-extra .block-picker {
-      margin-top: 2px;
-      font-size: 1em;
-      border-radius: 5px;
-      border: 1px solid #475065;
-      background: #23272e;
-      color: #e3e3e3;
-      padding: 1px 4px;
-    }
-    .status-extra .block-picker:focus {
-      outline: 2px solid var(--accent);
-    }
-    .status-extra .time {
-      font-size: 1.02em;
-      font-weight: 700;
-      color: var(--accent);
-      margin-top: 2px;
-    }
-    @media (max-width: 700px) {
-      .status-extras { flex-direction: column; gap: 8px; }
-      .status-extra, .status-extra.block-time-left { min-width: 80px; }
-    }
-    .fun-border {
-      border: 2px dashed #2b8af7;
-      padding: 3px;
-      border-radius: 13px;
-      margin: 12px 0;
-      background: #20242a;
-      animation: none;
-    }
-    .mood-bar {
-      margin: 20px 0 0 0;
-      text-align: center;
-      background: var(--block-bg);
-      border-radius: 11px;
-      box-shadow: 0 2px 10px #0002;
-      padding: 12px 0 11px 0;
-      border: 1px solid #262a31;
-    }
-    .mood-bar label {
-      margin-right: 9px;
-      font-size: 1.1em;
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .mood-btn {
-      font-size: 1.6em;
-      margin: 0 7px;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      transition: transform 0.12s;
-      outline: none;
-    }
-    .mood-btn.selected, .mood-btn:focus {
-      transform: scale(1.18);
-      filter: brightness(1.25);
-    }
-    .mood-history {
-      margin: 9px 0 0 0;
-      font-size: 0.97em;
-      color: var(--accent);
-      font-weight: 500;
-      min-height: 1.6em;
-    }
-    .restroom-status {
-      text-align: center;
-      margin: 13px 0 0 0;
-      font-size: 1.25rem;
-      padding: 10px 0;
-      border-radius: 8px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      transition: background 0.2s, color 0.2s;
-      background: #232a33;
-      color: #2b8af7;
-      border: 2px solid #2b8af7;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 1px 7px #0002;
-      position: relative;
-    }
-    .restroom-status.unavailable {
-      color: #f44336;
-      background: #2a1c1c;
-      border-color: #f44336;
-      text-shadow: none;
-    }
-    .restroom-status.available {
-      color: #41c65b;
-      background: #1c2a1c;
-      border-color: #41c65b;
-      text-shadow: none;
-    }
-    .confetti-piece {
-      position: fixed;
-      top: 0;
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-      opacity: 0.7;
-      pointer-events: none;
-      z-index: 9999;
-      animation: confetti-fall 2.5s linear forwards;
-    }
-    @keyframes confetti-fall {
-      to {
-        transform: translateY(92vh) rotate(360deg);
-        opacity: 0.25;
-      }
-    }
-    /* Weather HAC styles */
-    .weather-hac {
-      margin: 18px 0 0 0;
-      background: #232a33;
-      border: 2px solid #2b8af7;
-      border-radius: 10px;
-      padding: 13px 15px 12px 15px;
-      color: #2b8af7;
-      font-size: 1.13em;
-      text-align: center;
-      font-weight: 700;
-      letter-spacing: 1px;
-      max-width: 420px;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 1px 6px #0002;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .weather-hac.weather-ok {
-      background: #203024;
-      color: #41c65b;
-      border-color: #41c65b;
-      text-shadow: none;
-    }
-    .weather-hac.weather-rain {
-      background: #2a1c1c;
-      color: #f44336;
-      border-color: #f44336;
-      text-shadow: none;
-    }
-    .weather-hac .weather-hac-status {
-      font-size: 1.14em;
-      font-weight: 800;
-      margin-top: 1px;
-    }
-    .weather-hac .weather-hac-detail {
-      font-size: 0.98em;
-      font-weight: 500;
-      color: #7fa9ce;
-      margin-top: 3px;
-    }
-    .weather-hac .weather-hac-btn {
-      background: #232a33;
-      color: #2b8af7;
-      border: 1.5px solid #2b8af7;
-      border-radius: 7px;
-      font-size: 0.98em;
-      padding: 3px 11px;
-      margin-top: 4px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: background 0.17s, color 0.17s;
-    }
-    .weather-hac .weather-hac-btn:hover {
-      background: #2b8af7;
-      color: #fff;
-      border-color: #2b8af7;
-    }
-  </style>
-	
-  <!-- FischyBOT SDK -->
-<script src="https://dfeef5fb-a01c-4f79-98e5-0379e05cd3b9-00-2a73qkvr5756h.worf.replit.dev/sdk/fischybot.js"></script>
-<script>
-  FischyBOT.init({
-  "apiKey": "fsk_be1dc28972f64500a507ee68ea00801f",
-  "endpoint": "https://dfeef5fb-a01c-4f79-98e5-0379e05cd3b9-00-2a73qkvr5756h.worf.replit.dev/api/sdk/track",
-  "trackClicks": true,
-  "trackMoves": true,
-  "trackScrolls": false
-});
-</script>
-  
-  <a title="GDPR-compliant Web Analytics" href="https://clicky.com/101493068"><img alt="Clicky" src="//static.getclicky.com/media/links/badge.gif" border="0" /></a>
-<script async data-id="101493068" src="//static.getclicky.com/js"></script>
+			        .navbar-content {
+						            max-width: 1000px;
+						            margin: 0 auto;
+						            display: flex;
+						            justify-content: space-between;
+						            align-items: center;
+					}
 
-  <div class="bg-anim"></div>
-  <div class="container">
-    <button class="theme-switcher" id="theme-switcher">🌙 Theme</button>
-    <h1>7th Grade Schedule</h1>
-    <div class="progress-bar-container">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
-    <div class="encouragement" id="encouragement"></div>
-    <div class="schedule-header">Today's Blocks</div>
-    <div class="schedule" id="schedule"></div>
-    <div class="status" id="status">
-      <h2>Status</h2>
-      <div class="current-block-progress-wrapper" id="current-block-progress" style="display:none;">
-        <div class="current-block-progress-label">Current Block Progress</div>
-        <div class="current-block-progress-bar-bg">
-          <div class="current-block-progress-bar-fill" id="current-block-progress-fill"></div>
-        </div>
-      </div>
-      <div id="status-blocks"></div>
-      <div class="status-extras" id="status-extras"></div>
-    </div>
-    <div class="restroom-status" id="restroom-status">
-      Restroom: Unavailable
-    </div>
-    <!-- WEATHER HAC WIDGET, ADDED -->
-    <div class="weather-hac" id="weather-hac">
-      <span class="weather-hac-status">Checking weather for HAC...</span>
-      <span class="weather-hac-detail"></span>
-      <button class="weather-hac-btn" id="weather-hac-refresh" style="display:none;">↻ Refresh</button>
-    </div>
-    
-  </div>
-  <div class="notes-modal-bg" id="notes-modal-bg" style="display:none;">
-    <div class="notes-modal" id="notes-modal">
-      <h2 id="notes-modal-title">Notes</h2>
-      <textarea id="notes-modal-text"></textarea><br>
-      <button class="close-notes" id="close-notes-btn">Close</button>
-      <button class="save-notes" id="save-notes-btn">Save</button>
-    </div>
-  </div>
-  <script>
-   
-    const schedule = [
-      { name: "Homeroom", start: "9:15", end: "9:55" },
-      { name: "Electives", start: "9:58", end: "10:58" },
-      { name: "3rd Block", start: "11:01", end: "12:01" },
-      { name: "4th Block", start: "12:04", end: "13:04" },
-      { name: "Lunch & HAC", start: "13:07", end: "14:07" },
-      { name: "5th Block", start: "14:10", end: "15:10" },
-      { name: "6th Block", start: "15:13", end: "16:13" },
-      { name: "Dismissal", start: "16:13", end: "17:00" },
-    ];
-    const encouragements = [
-      "You got this! 🚀",
-      "Keep up the great work! 💪",
-      "You're making awesome progress! 🌟",
-      "Stay positive and keep learning! 😎",
-      "Take a deep breath and crush it! 🐉",
-      "High five, you're doing great! 🙌",
-      "Almost there! Keep going! 🏁",
-      "Wow! You're on fire today! 🔥",
-      "Proud of you! 🎉",
-      "Believe in yourself, you are unstoppable! 🦸‍♂️"
-    ];
-    function to12h(time) {
-      let [h, m] = time.split(":").map(Number);
-      let ampm = h >= 12 ? "PM" : "AM";
-      let h12 = h % 12; if (h12 === 0) h12 = 12;
-      return `${h12}:${String(m).padStart(2,"0")} ${ampm}`;
-    }
-    const timeToSeconds = (time) => {
-      const [hours, minutes] = time.split(":").map(Number);
-      return hours * 3600 + minutes * 60;
-    };
-    function formatTime(secs) {
-      if (secs <= 0) return "0m 00s";
-      const m = Math.floor(secs / 60);
-      const s = secs % 60;
-      return `${m}m ${String(s).padStart(2, "0")}s`;
-    }
-    function getDayProgressPercent(nowSecs) {
-      const start = timeToSeconds(schedule[0].start);
-      const end = timeToSeconds(schedule[schedule.length-1].end);
-      if (nowSecs <= start) return 0;
-      if (nowSecs >= end) return 100;
-      return ((nowSecs - start) / (end - start)) * 100;
-    }
-    // --- THEME SWITCHER ---
-    const themeSwitcher = document.getElementById('theme-switcher');
-    themeSwitcher.onclick = function() {
-      document.body.classList.toggle('light');
-      if (document.body.classList.contains('light')) {
-        themeSwitcher.innerHTML = '🌞 Theme';
-        localStorage.setItem('bm-theme', 'light');
-      } else {
-        themeSwitcher.innerHTML = '🌙 Theme';
-        localStorage.setItem('bm-theme', 'dark');
-      }
-    };
-    (function(){
-      const theme = localStorage.getItem('bm-theme');
-      if (theme === 'light') {
-        document.body.classList.add('light');
-        themeSwitcher.innerHTML = '🌞 Theme';
-      }
-    })();
-    // --- BLOCK NOTES ---
-    const notesBtnClass = 'notes-btn';
-    const notesIndicatorClass = 'notes-indicator';
-    function getNotesKey(blockName) {
-      return 'bm-note-' + encodeURIComponent(blockName);
-    }
-    function getBlockNote(blockName) {
-      return localStorage.getItem(getNotesKey(blockName)) || '';
-    }
-    function setBlockNote(blockName, text) {
-      localStorage.setItem(getNotesKey(blockName), text);
-    }
-    function throwConfetti(lots = true) {
-      const confettiCount = lots ? 44 : 12;
-      for (let i = 0; i < confettiCount; i++) {
-        const conf = document.createElement('div');
-        conf.className = 'confetti-piece';
-        conf.style.left = Math.random()*98+'vw';
-        conf.style.background = `hsl(${Math.random()*360},80%,60%)`;
-        conf.style.animationDelay = (Math.random()*0.8).toFixed(2)+'s';
-        conf.style.transform = `rotate(${Math.random()*360}deg)`;
-        document.body.appendChild(conf);
-        setTimeout(()=>conf.remove(), 3000);
-      }
-    }
-    let lastBlockIndex = -1;
-    let time20mConfetti = {};
-    let prevBlockIndex = -1;
-    function showEncouragement() {
-      const eDiv = document.getElementById('encouragement');
-      eDiv.textContent = encouragements[Math.floor(Math.random()*encouragements.length)];
-      eDiv.style.opacity = '1';
-      setTimeout(()=>{eDiv.style.opacity='0.2';}, 4000);
-    }
-    const scheduleDiv = document.getElementById("schedule");
-    scheduleDiv.innerHTML = '';
-    schedule.forEach((block, idx) => {
-      const blockDiv = document.createElement("div");
-      blockDiv.classList.add("block");
-      blockDiv.innerHTML = `
-        <span>
-          ${block.name}
-          <span class="block-time">${to12h(block.start)} - ${to12h(block.end)}</span>
-          <button class="${notesBtnClass}" data-block="${block.name}">📝 Notes</button>
-          <span class="${notesIndicatorClass}" style="display:none;">✔</span>
-        </span>
-      `;
-      scheduleDiv.appendChild(blockDiv);
-    });
-    const notesModalBg = document.getElementById('notes-modal-bg');
-    const notesModal = document.getElementById('notes-modal');
-    const notesModalTitle = document.getElementById('notes-modal-title');
-    const notesModalText = document.getElementById('notes-modal-text');
-    let currNotesBlock = '';
-    scheduleDiv.addEventListener('click', function(e) {
-      if (e.target.classList.contains(notesBtnClass)) {
-        currNotesBlock = e.target.getAttribute('data-block');
-        notesModalTitle.textContent = `Notes for ${currNotesBlock}`;
-        notesModalText.value = getBlockNote(currNotesBlock);
-        notesModalBg.style.display = 'flex';
-        notesModalText.focus();
-      }
-    });
-    document.getElementById('close-notes-btn').onclick = () => {
-      notesModalBg.style.display = 'none';
-      currNotesBlock = '';
-    };
-    document.getElementById('save-notes-btn').onclick = () => {
-      setBlockNote(currNotesBlock, notesModalText.value);
-      notesModalBg.style.display = 'none';
-      currNotesBlock = '';
-      updateNotesIndicators();
-    };
-    notesModalBg.onclick = function(e){
-      if (e.target === notesModalBg) notesModalBg.style.display = 'none';
-    };
-    function updateNotesIndicators() {
-      Array.from(document.getElementsByClassName(notesBtnClass)).forEach(btn=>{
-        const block = btn.getAttribute('data-block');
-        const indicator = btn.parentNode.querySelector('.'+notesIndicatorClass);
-        indicator.style.display = getBlockNote(block).trim() ? '' : 'none';
-      });
-    }
-    
-    let tooltipInterval = null;
-    function showTooltip(dot, secondsUntil, blockName) {
-      removeTooltip();
-      const tooltip = document.createElement("span");
-      tooltip.className = "tooltip";
-      tooltip.innerText = `Starts in: ${formatTime(secondsUntil)}`;
-      dot.parentElement.appendChild(tooltip);
-      let currSecs = secondsUntil;
-      tooltipInterval = setInterval(() => {
-        currSecs--;
-        if (currSecs < 0) currSecs = 0;
-        tooltip.innerText = `Starts in: ${formatTime(currSecs)}`;
-        if (currSecs === 0) clearInterval(tooltipInterval);
-      }, 1000);
-    }
-    function removeTooltip() {
-      if (tooltipInterval) clearInterval(tooltipInterval);
-      document.querySelectorAll('.tooltip').forEach(t => t.remove());
-    }
-   
-    const restroomStatusDisplay = document.getElementById("restroom-status");
-    const progressBar = document.getElementById("progress-bar");
-    const currentBlockProgress = document.getElementById("current-block-progress");
-    const currentBlockProgressFill = document.getElementById("current-block-progress-fill");
-    let previousCurrentBlockIndex = -1;
-    function updateTimersAndStatus() {
-      const now = new Date();
-      const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-      let currentBlock = null;
-      let timeLeft = null;
-      let currentBlockIndex = -1;
-      let blockStart = null, blockEnd = null;
-      progressBar.style.width = getDayProgressPercent(currentSeconds) + "%";
-      const statusDiv = document.getElementById("status-blocks");
-      statusDiv.innerHTML = "";
-      schedule.forEach((block, index) => {
-        const start = timeToSeconds(block.start);
-        const end = timeToSeconds(block.end);
-        const statusItem = document.createElement("div");
-        statusItem.classList.add("status-block");
-        let dotClass = "orange", tooltipSecs = start - currentSeconds;
-        if (currentSeconds >= start && currentSeconds < end) {
-          currentBlock = block;
-          currentBlockIndex = index;
-          timeLeft = end - currentSeconds;
-          dotClass = "green";
-          blockStart = start;
-          blockEnd = end;
-        } else if (currentSeconds >= end) {
-          dotClass = "red";
-        }
-        statusItem.innerHTML = `<span tabindex="0" class="dot ${dotClass}"></span>${block.name}`;
-        if (dotClass === "orange" && tooltipSecs > 0) {
-          const dot = statusItem.querySelector('.dot');
-          dot.onmouseenter = () => showTooltip(dot, tooltipSecs, block.name);
-          dot.onmouseleave = removeTooltip;
-          dot.onfocus = () => showTooltip(dot, tooltipSecs, block.name);
-          dot.onblur = removeTooltip;
-        }
-        statusDiv.appendChild(statusItem);
-      });
-      if (currentBlock && blockStart !== null && blockEnd !== null && blockEnd > blockStart) {
-        const total = blockEnd - blockStart;
-        const elapsed = currentSeconds - blockStart;
-        const percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
-        currentBlockProgress.style.display = "";
-        if (currentBlockProgressFill) currentBlockProgressFill.style.width = percent + "%";
-      } else {
-        currentBlockProgress.style.display = "none";
-        if (currentBlockProgressFill) currentBlockProgressFill.style.width = "0%";
-      }
+			        .navbar-brand {
+						            font-size: 1.5rem;
+						            font-weight: 700;
+						            color: var(--primary);
+						            letter-spacing: -0.5px;
+					}
 
+			        .navbar-time {
+						            font-size: 1.1rem;
+						            color: var(--text-secondary);
+						            font-weight: 500;
+					}
 
-      if (previousCurrentBlockIndex !== -1 && previousCurrentBlockIndex !== currentBlockIndex) {
+			        .navbar-actions {
+						            display: flex;
+						            gap: 1rem;
+						            align-items: center;
+					}
 
-        throwConfetti(true);
-        showEncouragement();
-        time20mConfetti = {};
-      }
-      previousCurrentBlockIndex = currentBlockIndex;
+			        .theme-btn, .nav-link {
+						            background: rgba(43, 138, 247, 0.1);
+						            border: 1px solid var(--glass-border);
+						            color: var(--primary);
+						            padding: 0.5rem 1rem;
+						            border-radius: 8px;
+						            cursor: pointer;
+						            font-weight: 600;
+						            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+						            font-size: 0.9rem;
+					}
 
+			        .theme-btn:hover, .nav-link:hover {
+						            background: rgba(43, 138, 247, 0.2);
+						            border-color: var(--primary);
+						            transform: translateY(-2px);
+						            box-shadow: 0 4px 12px rgba(43, 138, 247, 0.2);
+					}
 
-      if (currentBlock) {
-        const blockDuration = blockEnd - blockStart;
-        const timeSinceStart = blockDuration - timeLeft;
-        const timeUntilEnd = timeLeft;
-        if (timeSinceStart < 600) {
-          restroomStatusDisplay.textContent = "Restroom: Unavailable (Wait 10 min after block start)";
-          restroomStatusDisplay.className = "restroom-status unavailable";
-        }
-        else if (timeUntilEnd < 600) {
-          restroomStatusDisplay.textContent = "Restroom: Unavailable (Less than 10 min left)";
-          restroomStatusDisplay.className = "restroom-status unavailable";
-        }
-        else {
-          restroomStatusDisplay.textContent = "Restroom: Available";
-          restroomStatusDisplay.className = "restroom-status available";
-        }
-        document.title = `${currentBlock.name} - ${formatTime(timeLeft)} remaining`;
-        // 20 minutes confetti (once per block)
-        if (blockStart !== null && (currentSeconds - blockStart >= 1200) && !time20mConfetti[currentBlockIndex]) {
-          throwConfetti(false); // small confetti
-          time20mConfetti[currentBlockIndex] = true;
-        }
-      } else {
-        restroomStatusDisplay.textContent = "Restroom: Unavailable";
-        restroomStatusDisplay.className = "restroom-status unavailable";
-        document.title = "Schedule";
-      }
-      updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now);
-    }
-    setInterval(updateTimersAndStatus, 1000);
-    updateTimersAndStatus();
-    updateNotesIndicators();
-    function updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now) {
-      const extras = document.getElementById("status-extras");
-      let copyMsg = "";
-      function copyBlockName() {
-        if (currentBlock) {
-          navigator.clipboard.writeText(currentBlock.name);
-          copyMsg = "Copied!";
-          showExtras();
-          setTimeout(()=>{copyMsg="";showExtras();},1000);
-        }
-      }
-      let timeLeftStr = currentBlock ? (
-        timeLeft > 0
-          ? `${Math.floor(timeLeft/3600)}h ${Math.floor((timeLeft%3600)/60)}m ${String(timeLeft%60).padStart(2,"0")}s`
-          : "Done"
-      ) : "N/A";
-      const totalSecs = timeToSeconds(schedule[schedule.length-1].end) - timeToSeconds(schedule[0].start);
-      const nowSecs = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
-      let progress = (nowSecs - timeToSeconds(schedule[0].start)) / totalSecs * 100;
-      progress = Math.max(0, Math.min(100, progress));
-      let emojiArr = ["😃","💪","🚀","🤩","😎","🌈","🔥","🎯","🍀","🦄","🌟","🏆"];
-      let randomEmoji = localStorage.getItem("status-random-emoji") || emojiArr[0];
-      function refreshEmoji() {
-        randomEmoji = emojiArr[Math.floor(Math.random()*emojiArr.length)];
-        localStorage.setItem("status-random-emoji", randomEmoji);
-        showExtras();
-      }
-      function showExtras() {
-        extras.innerHTML = `
-          <div class="status-extra">
-            <span class="extra-title">Current Block Name</span>
-            <span><strong>${currentBlock ? currentBlock.name : 'None'}</strong>
-              <button class="copy-btn" id="copy-block-btn">Copy</button>
-              ${copyMsg ? `<span class="copied-msg">${copyMsg}</span>` : ""}
-            </span>
-          </div>
-          <div class="status-extra block-time-left">
-            <span class="extra-title" style="font-size:1.05em;">Block Time Left</span>
-            <span class="time" style="font-size:1.45em;font-weight:800;">${timeLeftStr}</span>
-          </div>
-          <div class="status-extra">
-            <span class="extra-title">Day Progress</span>
-            <span class="time">${progress.toFixed(1)}%</span>
-          </div>
-          <div class="status-extra">
-            <span class="extra-title">Motivation</span>
-            <span class="emoji" id="refresh-emoji-btn" style="cursor:pointer;" title="Refresh">${randomEmoji}</span>
-          </div>
-        `;
-        const copyBtn = document.getElementById("copy-block-btn");
-        if (copyBtn) copyBtn.onclick = copyBlockName;
-        const emojiBtn = document.getElementById("refresh-emoji-btn");
-        if (emojiBtn) emojiBtn.onclick = refreshEmoji;
-      }
-      showExtras();
-    }
-    (function(){
-      const moods = ["😀","😐","😢","🤩","😴"];
-      const moodBtns = Array.from(document.getElementsByClassName("mood-btn"));
-      const moodHistoryEl = document.getElementById("mood-history");
-      function saveMood(mood) {
-        let arr = [];
-        try { arr = JSON.parse(localStorage.getItem("bm-mood-history")||"[]"); } catch {}
-        arr.unshift({ mood, t: Date.now() });
-        arr = arr.slice(0, 10);
-        localStorage.setItem("bm-mood-history", JSON.stringify(arr));
-        showMoodHistory();
-      }
-      function showMoodHistory() {
-        let arr = [];
-        try { arr = JSON.parse(localStorage.getItem("bm-mood-history")||"[]"); } catch {}
-        if(arr.length){
-          moodHistoryEl.textContent = "Recent: " + arr.slice(0,5).map(m=>m.mood).join(" ");
-        } else {
-          moodHistoryEl.textContent = "";
-        }
-        moodBtns.forEach(btn=>{
-          btn.classList.remove("selected");
-        });
-        if(arr.length) {
-          const current = arr[0].mood;
-          moodBtns.forEach(btn=>{ if(btn.dataset.mood === current) btn.classList.add("selected"); });
-        }
-      }
-      moodBtns.forEach(btn=>{
-        btn.onclick = ()=>{ saveMood(btn.dataset.mood); };
-      });
-      showMoodHistory();
-    })();
+			        .container {
+						            max-width: 900px;
+						            margin: 2rem auto;
+						            padding: 0 1.5rem;
+					}
 
+			        /* Header Section */
+			        .header {
+						            text-align: center;
+						            margin-bottom: 3rem;
+					}
 
-    const WEATHER_LAT = 35.39602;
-    const WEATHER_LON = -80.92412;
-    const HAC_BLOCK = schedule.find(b => b.name.toLowerCase().includes("hac")) || { start: "13:07", end: "14d:07" };
-    function pad(n){ return n < 10 ? '0'+n : n; }
-    function getTodayDateStr() {
-      const d = new Date();
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    }
-    function getHacHourMinutes() {
-      let [starth, startm] = HAC_BLOCK.start.split(':').map(Number);
-      let [endh, endm] = HAC_BLOCK.end.split(':').map(Number);
-      return {starth, startm, endh, endm};
-    }
-    async function fetchWeatherHAC() {
-      const weatherBox = document.getElementById("weather-hac");
-      const status = weatherBox.querySelector(".weather-hac-status");
-      const detail = weatherBox.querySelector(".weather-hac-detail");
-      const btn = weatherBox.querySelector(".weather-hac-btn");
-      weatherBox.className = "weather-hac";
-      status.textContent = "Checking weather for HAC...";
-      detail.textContent = "";
-      btn.style.display = "none";
-      try {
-        const params =
-          `latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}` +
-          `&hourly=precipitation_probability,precipitation` +
-          `&daily=precipitation_sum,precipitation_hours` +
-          `&forecast_days=1&timezone=auto`;
-        const resp = await fetch("https://api.open-meteo.com/v1/forecast?" + params);
-        const data = await resp.json();
+			        .header-title {
+						            font-size: 3.5rem;
+						            font-weight: 800;
+						            background: linear-gradient(135deg, var(--primary) 0%, #5200ff 100%);
+						            -webkit-background-clip: text;
+						            -webkit-text-fill-color: transparent;
+						            background-clip: text;
+						            margin-bottom: 0.5rem;
+						            letter-spacing: -1px;
+					}
 
-        const {starth, startm, endh, endm} = getHacHourMinutes();
+			        .header-subtitle {
+						            color: var(--text-secondary);
+						            font-size: 1.1rem;
+						            margin-bottom: 1.5rem;
+					}
 
-        // Find hourly forecast for HAC, for 1hr before, and for 1hr after
-        let rainToday = false;
-        let rainDuringHac = false;
-        let rainBeforeHac = false;
-        let rainAfterHac = false;
-        let hacHours = [];
-        let beforeHacHours = [];
-        let afterHacHours = [];
+			        .progress-section {
+						            margin-bottom: 2rem;
+					}
 
-        for(let i=0; i<data.hourly.time.length; ++i) {
-          const t = new Date(data.hourly.time[i]);
-          const hour = t.getHours();
-          const min = t.getMinutes();
-          // Rain at any hour today?
-          if(data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05) {
-            rainToday = true;
-          }
+			        .progress-label {
+						            font-size: 0.9rem;
+						            color: var(--text-secondary);
+						            margin-bottom: 0.5rem;
+						            font-weight: 600;
+					}
 
-          // Is this hour before HAC but within 1 hour?
-          let before =
-            (hour === starth && min < startm) ||
-            (hour === starth-1) ||
-            (hour === starth-2 && startm<15); // if HAC is near :00, include prev-2h if close to the hour
+			        .progress-bar-container {
+						            width: 100%;
+						            height: 12px;
+						            background: var(--card-bg);
+						            border-radius: 100px;
+						            overflow: hidden;
+						            border: 1px solid var(--card-border);
+						            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+					}
 
-          // Is this hour after HAC but within 1 hour?
-          let after =
-            (hour === endh && min > endm) ||
-            (hour === endh+1) ||
-            (hour === endh+2 && endm>45); // if HAC ends near :59 include next+2h
+			        .progress-bar {
+						            height: 100%;
+						            background: linear-gradient(90deg, var(--primary) 0%, #5200ff 100%);
+						            border-radius: 100px;
+						            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+						            box-shadow: 0 0 20px rgba(43, 138, 247, 0.5);
+					}
 
-          // During HAC?
-          const inHac = (
-            (hour > starth || (hour === starth && min >= startm)) &&
-            (hour < endh || (hour === endh && min <= endm))
-          );
+			        .encouragement {
+						            text-align: center;
+						            font-size: 1.2rem;
+						            color: var(--primary);
+						            font-weight: 600;
+						            min-height: 1.5em;
+						            margin-top: 1rem;
+						            animation: fadeInOut 5s ease-in-out;
+					}
 
-          // Rain checks
-          if (inHac) {
-            hacHours.push({prob:data.hourly.precipitation_probability[i], amt:data.hourly.precipitation[i]});
-            if(data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05) {
-              rainDuringHac = true;
-            }
-          }
-          if (before) {
-            beforeHacHours.push({prob:data.hourly.precipitation_probability[i], amt:data.hourly.precipitation[i], hour, min});
-            if(data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05) {
-              rainBeforeHac = true;
-            }
-          }
-          if (after) {
-            afterHacHours.push({prob:data.hourly.precipitation_probability[i], amt:data.hourly.precipitation[i], hour, min});
-            if(data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05) {
-              rainAfterHac = true;
-            }
-          }
-        }
+			        @keyframes fadeInOut {
+						            0%, 100% { opacity: 0.3; }
+						            50% { opacity: 1; }
+					}
 
-        // Display logic
-        if (rainDuringHac) {
-          weatherBox.classList.add("weather-rain");
-          status.textContent = "Rain expected during HAC 😕";
-          let maxProb = Math.max(...hacHours.map(x=>x.prob));
-          detail.textContent = `Rain chance during HAC: ${maxProb}%`;
-        } else if (rainBeforeHac) {
-          weatherBox.classList.add("weather-rain");
-          status.textContent = "HAC inside today";
-          let max = Math.max(...beforeHacHours.map(x=>x.prob));
-          detail.textContent = `Rain is very close to HAC (chance: ${max}%)`;
-        } else if (rainAfterHac) {
-          weatherBox.classList.add("weather-ok");
-          status.textContent = "You have outside HAC today (rain after HAC)";
-          let max = Math.max(...afterHacHours.map(x=>x.prob));
-          detail.textContent = `Rain expected after HAC (chance: ${max}%)`;
-        } else if (!rainToday && !rainDuringHac && !rainBeforeHac && !rainAfterHac) {
-          weatherBox.classList.add("weather-ok");
-          status.textContent = "You can go outside for HAC!";
-          detail.textContent = "No rain expected today. Have fun!";
-        } else if(rainToday) {
-          weatherBox.classList.add("weather-ok");
-          status.textContent = "No rain during HAC!";
-          detail.textContent = "It might rain at some other time today, but not during HAC.";
-        } else {
-          weatherBox.classList.add("weather-ok");
-          status.textContent = "Weather data unavailable.";
-        }
-        btn.style.display = "";
-      } catch(e) {
-        weatherBox.classList.add("weather-rain");
-        status.textContent = "Weather check failed.";
-        detail.textContent = e && e.message ? e.message : e;
-        btn.style.display = "";
-      }
-    }
-    document.getElementById("weather-hac-refresh").onclick = fetchWeatherHAC;
-    fetchWeatherHAC();
-  </script>
-</body>
-</html>
-<button onclick="window.open('https://fischy6734.github.io/BM/eog-countdown.html')" style="background:linear-gradient(135deg,#00eaff,#5200ff);color:#fff;border:none;border-radius:2em;padding:1em 2em;font-size:1.3em;font-family:sans-serif;font-weight:700;box-shadow:0 4px 18px #00eaff88,0 1px 4px #5200ff66;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;">
-  <span style="display:inline-block;vertical-align:middle;width:1.2em;height:1.2em;position:relative;margin-right:.6em;">
-    <svg id="eogClock" width="100%" height="100%" viewBox="0 0 32 32">
-      <circle cx="16" cy="16" r="15" fill="#fff2" stroke="#fff" stroke-width="2"/>
-      <line id="eogHour" x1="16" y1="16" x2="16" y2="9" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/>
-      <line id="eogMin" x1="16" y1="16" x2="16" y2="5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
-      <circle cx="16" cy="16" r="1.6" fill="#fff"/>
-    </svg>
-  </span>
-  EOG Countdown!
-</button>
-<button onclick="window.open('https://fischy6734.github.io/BM/8thGrade')" style="background:linear-gradient(135deg,#00eaff,#5200ff);color:#fff;border:none;border-radius:2em;padding:1em 2em;font-size:1.3em;font-family:sans-serif;font-weight:700;box-shadow:0 4px 18px #00eaff88,0 1px 4px #5200ff66;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;">
-  <span style="display:inline-block;vertical-align:middle;width:1.2em;height:1.2em;position:relative;margin-right:.6em;">
-    <svg id="eogClock" width="100%" height="100%" viewBox="0 0 32 32">
-      <circle cx="16" cy="16" r="15" fill="#fff2" stroke="#fff" stroke-width="2"/>
-      <line id="eogHour" x1="16" y1="16" x2="16" y2="9" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/>
-      <line id="eogMin" x1="16" y1="16" x2="16" y2="5" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
-      <circle cx="16" cy="16" r="1.6" fill="#fff"/>
-    </svg>
-  </span>
-  8th Grade Schedule
-</button>
-<script>
-(function animateClock(){
-  var hour = document.getElementById("eogHour");
-  var min = document.getElementById("eogMin");
-  function draw() {
-    var now=new Date();
-    var h=now.getHours()%12+now.getMinutes()/60;
-    var m=now.getMinutes()+now.getSeconds()/60;
-    hour.setAttribute('transform','rotate('+((h)*30)+' 16 16)');
-    min.setAttribute('transform','rotate('+(m*6)+' 16 16)');
-    requestAnimationFrame(draw);
-  }
-  if(hour && min) draw();
-})();
-</script>
-<!--Start of Tawk.to Script-->
-<script async src="https://embed.tawk.to/682b83f8de0d8619101f1d8d/1irkvn0r0" charset="UTF-8" crossorigin="*"></script>
-<!--End of Tawk.to Script-->
+			        /* Main Schedule Grid */
+			        .schedule-container {
+						            display: grid;
+						            gap: 1rem;
+						            margin-bottom: 3rem;
+					}
+
+			        .schedule-header {
+						            font-size: 1.3rem;
+						            font-weight: 700;
+						            color: var(--primary);
+						            margin-bottom: 1rem;
+					}
+
+			        .block {
+						            background: var(--card-bg);
+						            backdrop-filter: blur(10px);
+						            border: 1px solid var(--card-border);
+						            border-radius: 12px;
+						            padding: 1.2rem 1.5rem;
+						            display: flex;
+						            justify-content: space-between;
+						            align-items: center;
+						            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+						            hover: border-color var(--primary);
+					}
+
+			        .block:hover {
+						            background: rgba(43, 138, 247, 0.1);
+						            border-color: var(--primary);
+						            transform: translateY(-4px);
+						            box-shadow: 0 8px 24px rgba(43, 138, 247, 0.15);
+					}
+
+			        .block-left {
+						            flex: 1;
+					}
+
+			        .block-name {
+						            font-size: 1.2rem;
+						            font-weight: 700;
+						            color: var(--text-primary);
+						            margin-bottom: 0.3rem;
+					}
+
+			        .block-time {
+						            font-size: 0.95rem;
+						            color: var(--text-secondary);
+						            font-weight: 500;
+					}
+
+			        .block-right {
+						            display: flex;
+						            gap: 0.8rem;
+						            align-items: center;
+						            margin-left: 1rem;
+					}
+
+			        .notes-btn {
+						            background: var(--primary);
+						            color: white;
+						            border: none;
+						            padding: 0.5rem 1.2rem;
+						            border-radius: 8px;
+						            cursor: pointer;
+						            font-weight: 600;
+						            font-size: 0.9rem;
+						            transition: all 0.2s;
+					}
+
+			        .notes-btn:hover {
+						            background: var(--primary-dark);
+						            transform: scale(1.05);
+					}
+
+			        .notes-indicator {
+						            color: var(--success);
+						            font-size: 1.2rem;
+						            display: none;
+					}
+
+			        /* Status Section */
+			        .status-card {
+						            background: var(--card-bg);
+						            backdrop-filter: blur(10px);
+						            border: 1px solid var(--card-border);
+						            border-radius: 12px;
+						            padding: 2rem;
+						            margin-bottom: 2rem;
+						            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+					}
+
+			        .status-title {
+						            font-size: 1.3rem;
+						            font-weight: 700;
+						            color: var(--primary);
+						            margin-bottom: 1.5rem;
+					}
+
+			        .status-items {
+						            display: grid;
+						            gap: 1rem;
+						            margin-bottom: 1.5rem;
+					}
+
+			        .status-item {
+						            display: flex;
+						            align-items: center;
+						            gap: 1rem;
+						            padding: 0.8rem;
+						            background: rgba(43, 138, 247, 0.05);
+						            border-radius: 8px;
+						            border: 1px solid rgba(43, 138, 247, 0.1);
+					}
+
+			        .status-dot {
+						            width: 20px;
+						            height: 20px;
+						            border-radius: 50%;
+						            flex-shrink: 0;
+						            border: 2px solid var(--text-secondary);
+					}
+
+			        .status-dot.green {
+						            background: var(--success);
+						            border-color: var(--success);
+						            box-shadow: 0 0 12px rgba(65, 198, 91, 0.3);
+					}
+
+			        .status-dot.orange {
+						            background: var(--warning);
+						            border-color: var(--warning);
+						            box-shadow: 0 0 12px rgba(245, 166, 35, 0.3);
+					}
+
+			        .status-dot.red {
+						            background: var(--danger);
+						            border-color: var(--danger);
+					}
+
+			        .status-text {
+						            font-weight: 500;
+						            color: var(--text-primary);
+					}
+
+			        .status-extras {
+						            display: grid;
+						            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+						            gap: 1rem;
+					}
+
+			        .extra-item {
+						            background: rgba(43, 138, 247, 0.1);
+						            border: 1px solid rgba(43, 138, 247, 0.2);
+						            border-radius: 10px;
+						            padding: 1.2rem;
+						            text-align: center;
+					}
+
+			        .extra-label {
+						            font-size: 0.85rem;
+						            color: var(--text-secondary);
+						            font-weight: 600;
+						            margin-bottom: 0.5rem;
+						            text-transform: uppercase;
+						            letter-spacing: 0.5px;
+					}
+
+			        .extra-value {
+						            font-size: 1.8rem;
+						            font-weight: 800;
+						            color: var(--primary);
+					}
+
+			        .extra-emoji {
+						            font-size: 2rem;
+						            margin-top: 0.5rem;
+						            cursor: pointer;
+						            transition: transform 0.2s;
+					}
+
+			        .extra-emoji:hover {
+						            transform: scale(1.2) rotate(10deg);
+					}
+
+			        /* Current Block Progress */
+			        .current-block-section {
+						            display: none;
+						            margin-bottom: 1.5rem;
+					}
+
+			        .current-block-section.active {
+						            display: block;
+					}
+
+			        .current-block-label {
+						            font-size: 0.9rem;
+						            color: var(--text-secondary);
+						            margin-bottom: 0.5rem;
+						            font-weight: 600;
+					}
+
+			        .current-block-bar {
+						            height: 16px;
+						            background: var(--card-bg);
+						            border-radius: 100px;
+						            overflow: hidden;
+						            border: 1px solid var(--card-border);
+					}
+
+			        .current-block-fill {
+						            height: 100%;
+						            background: linear-gradient(90deg, var(--success) 0%, #5200ff 100%);
+						            border-radius: 100px;
+						            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+						            box-shadow: 0 0 20px rgba(65, 198, 91, 0.5);
+					}
+
+			        /* Restroom & Weather */
+			        .alert-box {
+						            border-radius: 12px;
+						            padding: 1.5rem;
+						            margin-bottom: 1.5rem;
+						            font-weight: 600;
+						            font-size: 1.1rem;
+						            text-align: center;
+						            border: 2px solid;
+						            transition: all 0.3s;
+					}
+
+			        .alert-box.available {
+						            background: rgba(65, 198, 91, 0.1);
+						            border-color: var(--success);
+						            color: var(--success);
+					}
+
+			        .alert-box.unavailable {
+						            background: rgba(244, 67, 54, 0.1);
+						            border-color: var(--danger);
+						            color: var(--danger);
+					}
+
+			        .alert-box.info {
+						            background: rgba(43, 138, 247, 0.1);
+						            border-color: var(--primary);
+						            color: var(--primary);
+					}
+
+			        /* Modal */
+			        .notes-modal-bg {
+						            display: none;
+						            position: fixed;
+						            top: 0;
+						            left: 0;
+						            right: 0;
+						            bottom: 0;
+						            background: rgba(0, 0, 0, 0.5);
+						            backdrop-filter: blur(4px);
+						            z-index: 1000;
+						            align-items: center;
+						            justify-content: center;
+					}
+
+			        .notes-modal-bg.show {
+						            display: flex;
+					}
+
+			        .notes-modal {
+						            background: var(--glass-bg);
+						            backdrop-filter: blur(20px);
+						            border: 1px solid var(--glass-border);
+						            border-radius: 16px;
+						            padding: 2rem;
+						            max-width: 500px;
+						            width: 90%;
+						            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+					}
+
+			        .modal-title {
+						            font-size: 1.5rem;
+						            font-weight: 700;
+						            color: var(--primary);
+						            margin-bottom: 1.5rem;
+					}
+
+			        .modal-textarea {
+						            width: 100%;
+						            min-height: 150px;
+						            background: rgba(255, 255, 255, 0.05);
+						            border: 1px solid var(--glass-border);
+						            border-radius: 10px;
+						            padding: 1rem;
+						            color: var(--text-primary);
+						            font-family: inherit;
+						            font-size: 1rem;
+						            margin-bottom: 1.5rem;
+						            resize: vertical;
+					}
+
+			        .modal-textarea::placeholder {
+						            color: var(--text-secondary);
+					}
+
+			        .modal-textarea:focus {
+						            outline: none;
+						            border-color: var(--primary);
+						            background: rgba(43, 138, 247, 0.1);
+					}
+
+			        .modal-buttons {
+						            display: flex;
+						            gap: 1rem;
+					}
+
+			        .modal-btn {
+						            flex: 1;
+						            padding: 0.8rem 1.5rem;
+						            border: none;
+						            border-radius: 8px;
+						            font-weight: 600;
+						            cursor: pointer;
+						            transition: all 0.2s;
+						            font-size: 1rem;
+					}
+
+			        .modal-btn.save {
+						            background: var(--success);
+						            color: white;
+					}
+
+			        .modal-btn.save:hover {
+						            background: #38a04a;
+						            transform: scale(1.02);
+					}
+
+			        .modal-btn.close {
+						            background: rgba(244, 67, 54, 0.2);
+						            color: var(--danger);
+						            border: 1px solid var(--danger);
+					}
+
+			        .modal-btn.close:hover {
+						            background: rgba(244, 67, 54, 0.3);
+					}
+
+			        /* Responsive */
+			        @media (max-width: 768px) {
+						            .header-title {
+										                font-size: 2.5rem;
+									}
+
+						            .navbar-content {
+										                flex-direction: column;
+										                gap: 1rem;
+									}
+
+						            .block {
+										                flex-direction: column;
+										                align-items: flex-start;
+									}
+
+						            .block-right {
+										                width: 100%;
+										                margin-left: 0;
+										                margin-top: 1rem;
+									}
+
+						            .status-extras {
+										                grid-template-columns: 1fr;
+									}
+					}
+
+			        /* Animation for confetti */
+			        @keyframes confettiFall {
+						            to {
+										                transform: translateY(100vh) rotate(720deg);
+										                opacity: 0;
+									}
+					}
+
+			        .confetti {
+						            position: fixed;
+						            pointer-events: none;
+						            animation: confettiFall 3s ease-in forwards;
+					}
+			    </style>
+	</head>
+	<body>
+		    <!-- Navbar -->
+		    <div class="navbar">
+				        <div class="navbar-content">
+							            <div class="navbar-brand">📚 7th Grade Schedule</div>div>
+							            <div class="navbar-time" id="navbar-time">--:-- --</div>div>
+							            <div class="navbar-actions">
+											                <button class="theme-btn" id="theme-switcher">🌙 Theme</button>button>
+											                <a class="nav-link" href="./8thGrade.html">8th Grade</a>a>
+										</div>div>
+						</div>div>
+			</div>div>
+
+		    <div class="container">
+				        <!-- Header -->
+				        <div class="header">
+							            <h1 class="header-title">Schedule</h1>h1>
+							            <p class="header-subtitle" id="day-info">Today's Classes</p>p>
+
+							            <!-- Progress -->
+							            <div class="progress-section">
+											                <div class="progress-label">Day Progress</div>div>
+											                <div class="progress-bar-container">
+																                    <div class="progress-bar" id="progress-bar"></div>div>
+															</div>div>
+										</div>div>
+							            <div class="encouragement" id="encouragement"></div>div>
+						</div>div>
+
+				        <!-- Schedule -->
+				        <div class="schedule-container">
+							            <h2 class="schedule-header">Today's Blocks</h2>h2>
+							            <div id="schedule"></div>div>
+						</div>div>
+
+				        <!-- Status Section -->
+				        <div class="status-card">
+							            <h2 class="status-title">Status</h2>h2>
+
+							            <!-- Current Block Progress -->
+							            <div class="current-block-section" id="current-block-section">
+											                <div class="current-block-label">Current Block Progress</div>div>
+											                <div class="current-block-bar">
+																                    <div class="current-block-fill" id="current-block-fill"></div>div>
+															</div>div>
+											                <div style="height: 1rem;"></div>div>
+										</div>div>
+
+							            <!-- Status Items -->
+							            <div class="status-items" id="status-blocks"></div>div>
+
+							            <!-- Status Extras -->
+							            <div class="status-extras" id="status-extras"></div>div>
+						</div>div>
+
+				        <!-- Restroom Status -->
+				        <div class="alert-box unavailable" id="restroom-status">🚪 Restroom: Unavailable</div>div>
+
+				        <!-- Weather HAC -->
+				        <div class="alert-box info" id="weather-hac">☀️ Checking weather for HAC...</div>div>
+			</div>div>
+
+		    <!-- Notes Modal -->
+		    <div class="notes-modal-bg" id="notes-modal-bg">
+				        <div class="notes-modal">
+							            <h2 class="modal-title" id="notes-modal-title">Notes</h2>h2>
+							            <textarea class="modal-textarea" id="notes-modal-text" placeholder="Add your notes here..."></textarea>
+							            <div class="modal-buttons">
+											                <button class="modal-btn close" id="close-notes-btn">Close</button>button>
+											                <button class="modal-btn save" id="save-notes-btn">Save</button>button>
+										</div>div>
+						</div>div>
+			</div>div>
+
+		    <script>
+				        const schedule = [
+							{ name: "Homeroom", start: "9:15", end: "9:55" },
+							{ name: "Electives", start: "9:58", end: "10:58" },
+							{ name: "3rd Block", start: "11:01", end: "12:01" },
+							{ name: "4th Block", start: "12:04", end: "13:04" },
+							{ name: "Lunch & HAC", start: "13:07", end: "14:07" },
+							{ name: "5th Block", start: "14:10", end: "15:10" },
+							{ name: "6th Block", start: "15:13", end: "16:13" },
+							{ name: "Dismissal", start: "16:13", end: "17:00" }
+							        ];
+
+				        const encouragements = [
+							            "You got this! 🚀", "Keep up the great work! 💪", "You're making awesome progress! 🌟",
+							            "Stay positive and keep learning! 😎", "Take a deep breath and crush it! 🐉",
+							            "High five, you're doing great! 🙌", "Almost there! Keep going! 🏁",
+							            "Wow! You're on fire today! 🔥", "Proud of you! 🎉", "You are unstoppable! 🦸‍♂️"
+							        ];
+
+				        const emojiArr = ["😃","💪","🚀","🤩","😎","🌈","🔥","🎯","🍀","🦄","🌟","🏆"];
+
+				        // Utility Functions
+				        function to12h(time) {
+							            let [h, m] = time.split(":").map(Number);
+							            let ampm = h >= 12 ? "PM" : "AM";
+							            let h12 = h % 12 || 12;
+							            return `${h12}:${String(m).padStart(2,"0")} ${ampm}`;
+						}
+
+				        function timeToSeconds(time) {
+							            const [hours, minutes] = time.split(":").map(Number);
+							            return hours * 3600 + minutes * 60;
+						}
+
+				        function formatTime(secs) {
+							            if (secs <= 0) return "0m 00s";
+							            const m = Math.floor(secs / 60);
+							            const s = secs % 60;
+							            return `${m}m ${String(s).padStart(2, "0")}s`;
+						}
+
+				        function getDayProgressPercent(nowSecs) {
+							            const start = timeToSeconds(schedule[0].start);
+							            const end = timeToSeconds(schedule[schedule.length-1].end);
+							            if (nowSecs <= start) return 0;
+							            if (nowSecs >= end) return 100;
+							            return ((nowSecs - start) / (end - start)) * 100;
+						}
+
+				        // Theme Switcher
+				        const themeSwitcher = document.getElementById('theme-switcher');
+				        themeSwitcher.onclick = () => {
+							            document.body.classList.toggle('light');
+							            if (document.body.classList.contains('light')) {
+											                themeSwitcher.innerHTML = '☀️ Theme';
+											                localStorage.setItem('bm-theme', 'light');
+										} else {
+											                themeSwitcher.innerHTML = '🌙 Theme';
+											                localStorage.setItem('bm-theme', 'dark');
+										}
+						};
+
+				        (function() {
+							            const theme = localStorage.getItem('bm-theme');
+							            if (theme === 'light') {
+											                document.body.classList.add('light');
+											                themeSwitcher.innerHTML = '☀️ Theme';
+										}
+						})();
+
+				        // Notes Management
+				        function getNotesKey(blockName) {
+							            return 'bm-note-' + encodeURIComponent(blockName);
+						}
+
+				        function getBlockNote(blockName) {
+							            return localStorage.getItem(getNotesKey(blockName)) || '';
+						}
+
+				        function setBlockNote(blockName, text) {
+							            localStorage.setItem(getNotesKey(blockName), text);
+						}
+
+				        // Build Schedule
+				        const scheduleDiv = document.getElementById("schedule");
+				        schedule.forEach((block) => {
+							            const blockDiv = document.createElement("div");
+							            blockDiv.classList.add("block");
+							            blockDiv.innerHTML = `
+										                <div class="block-left">
+														                    <div class="block-name">${block.name}</div>
+																			                    <div class="block-time">${to12h(block.start)} - ${to12h(block.end)}</div>
+																								                </div>
+																												                <div class="block-right">
+																																                    <button class="notes-btn" data-block="${block.name}">📝 Notes</button>
+																																					                    <span class="notes-indicator">✔</span>
+																																										                </div>
+																																														            `;
+							            scheduleDiv.appendChild(blockDiv);
+						});
+
+				        // Notes Modal
+				        const notesModalBg = document.getElementById('notes-modal-bg');
+				        const notesModalText = document.getElementById('notes-modal-text');
+				        const notesModalTitle = document.getElementById('notes-modal-title');
+				        let currNotesBlock = '';
+
+				        scheduleDiv.addEventListener('click', (e) => {
+							            if (e.target.classList.contains('notes-btn')) {
+											                currNotesBlock = e.target.getAttribute('data-block');
+											                notesModalTitle.textContent = `Notes for ${currNotesBlock}`;
+											                notesModalText.value = getBlockNote(currNotesBlock);
+											                notesModalBg.classList.add('show');
+											                notesModalText.focus();
+										}
+						});
+
+				        document.getElementById('close-notes-btn').onclick = () => {
+							            notesModalBg.classList.remove('show');
+						};
+
+				        document.getElementById('save-notes-btn').onclick = () => {
+							            setBlockNote(currNotesBlock, notesModalText.value);
+							            notesModalBg.classList.remove('show');
+							            updateNotesIndicators();
+						};
+
+				        notesModalBg.onclick = (e) => {
+							            if (e.target === notesModalBg) notesModalBg.classList.remove('show');
+						};
+
+				        function updateNotesIndicators() {
+							            document.querySelectorAll('.notes-btn').forEach(btn => {
+											                const block = btn.getAttribute('data-block');
+											                const indicator = btn.parentElement.querySelector('.notes-indicator');
+											                indicator.style.display = getBlockNote(block).trim() ? '' : 'none';
+										});
+						}
+
+				        // Confetti
+				        function throwConfetti() {
+							            for (let i = 0; i < 30; i++) {
+											                const conf = document.createElement('div');
+											                conf.className = 'confetti';
+											                conf.style.left = Math.random() * 100 + '%';
+											                conf.style.background = `hsl(${Math.random()*360},80%,60%)`;
+											                conf.style.width = Math.random() * 10 + 5 + 'px';
+											                conf.style.height = conf.style.width;
+											                conf.style.animationDelay = Math.random() * 0.5 + 's';
+											                document.body.appendChild(conf);
+											                setTimeout(() => conf.remove(), 3000);
+										}
+						}
+
+				        // Update Navbar Time
+				        function updateNavbarTime() {
+							            const now = new Date();
+							            const h = String(now.getHours()).padStart(2, '0');
+							            const m = String(now.getMinutes()).padStart(2, '0');
+							            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+							            document.getElementById('navbar-time').textContent = `${h}:${m} ${ampm}`;
+						}
+				        setInterval(updateNavbarTime, 1000);
+				        updateNavbarTime();
+
+				        // Main Update Loop
+				        let prevBlockIndex = -1;
+				        let time20mConfetti = {};
+
+				        function updateTimersAndStatus() {
+							            const now = new Date();
+							            const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+							            // Day Progress
+							            document.getElementById('progress-bar').style.width = getDayProgressPercent(currentSeconds) + '%';
+
+							            let currentBlock = null;
+							            let currentBlockIndex = -1;
+							            let blockStart = null, blockEnd = null;
+							            let timeLeft = null;
+
+							            // Update Status Blocks
+							            const statusDiv = document.getElementById('status-blocks');
+							            statusDiv.innerHTML = '';
+
+							            schedule.forEach((block, index) => {
+											                const start = timeToSeconds(block.start);
+											                const end = timeToSeconds(block.end);
+											                let dotClass = 'orange';
+
+											                if (currentSeconds >= start && currentSeconds < end) {
+																                    currentBlock = block;
+																                    currentBlockIndex = index;
+																                    timeLeft = end - currentSeconds;
+																                    dotClass = 'green';
+																                    blockStart = start;
+																                    blockEnd = end;
+															} else if (currentSeconds >= end) {
+																                    dotClass = 'red';
+															}
+
+											                const statusItem = document.createElement('div');
+											                statusItem.classList.add('status-item');
+											                statusItem.innerHTML = `
+															                    <span class="status-dot ${dotClass}"></span>
+																				                    <span class="status-text">${block.name}</span>
+																									                `;
+											                statusDiv.appendChild(statusItem);
+										});
+
+							            // Current Block Progress
+							            const currentBlockSection = document.getElementById('current-block-section');
+							            if (currentBlock && blockStart !== null && blockEnd !== null && blockEnd > blockStart) {
+											                const total = blockEnd - blockStart;
+											                const elapsed = currentSeconds - blockStart;
+											                const percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
+											                document.getElementById('current-block-fill').style.width = percent + '%';
+											                currentBlockSection.classList.add('active');
+										} else {
+											                currentBlockSection.classList.remove('active');
+										}
+
+							            // Block Transitions
+							            if (prevBlockIndex !== -1 && prevBlockIndex !== currentBlockIndex) {
+											                throwConfetti();
+											                const eDiv = document.getElementById('encouragement');
+											                eDiv.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
+											                time20mConfetti = {};
+										}
+							            prevBlockIndex = currentBlockIndex;
+
+							            // Restroom Status
+							            const restroomDisplay = document.getElementById('restroom-status');
+							            if (currentBlock) {
+											                const blockDuration = blockEnd - blockStart;
+											                const timeSinceStart = blockDuration - timeLeft;
+											                const timeUntilEnd = timeLeft;
+
+											                if (timeSinceStart < 600 || timeUntilEnd < 600) {
+																                    restroomDisplay.className = 'alert-box unavailable';
+																                    restroomDisplay.innerHTML = '🚪 Restroom: Unavailable';
+															} else {
+																                    restroomDisplay.className = 'alert-box available';
+																                    restroomDisplay.innerHTML = '✅ Restroom: Available';
+															}
+
+											                document.title = `${currentBlock.name} - ${formatTime(timeLeft)} remaining`;
+
+											                // 20-minute confetti
+											                if (blockStart !== null && (currentSeconds - blockStart >= 1200) && !time20mConfetti[currentBlockIndex]) {
+																                    throwConfetti();
+																                    time20mConfetti[currentBlockIndex] = true;
+															}
+										} else {
+											                restroomDisplay.className = 'alert-box unavailable';
+											                restroomDisplay.innerHTML = '🚪 Restroom: Unavailable';
+											                document.title = 'Schedule';
+										}
+
+							            // Status Extras
+							            updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now);
+						}
+
+				        function updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now) {
+							            const extras = document.getElementById('status-extras');
+
+							            let timeLeftStr = currentBlock ? (timeLeft > 0 ? 
+																		                  `${Math.floor(timeLeft/3600)}h ${Math.floor((timeLeft%3600)/60)}m ${String(timeLeft%60).padStart(2,"0")}s` : 
+																		                  'Done') : 'N/A';
+
+							            const totalSecs = timeToSeconds(schedule[schedule.length-1].end) - timeToSeconds(schedule[0].start);
+							            const nowSecs = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+							            let progress = (nowSecs - timeToSeconds(schedule[0].start)) / totalSecs * 100;
+							            progress = Math.max(0, Math.min(100, progress));
+
+							            let randomEmoji = localStorage.getItem("status-random-emoji") || emojiArr[0];
+
+							            extras.innerHTML = `
+										                <div class="extra-item">
+														                    <div class="extra-label">Current Block</div>
+																			                    <div class="extra-value">${currentBlock ? currentBlock.name : 'None'}</div>
+																								                </div>
+																												                <div class="extra-item">
+																																                    <div class="extra-label">Time Left</div>
+																																					                    <div class="extra-value" style="font-size: 1.2rem;">${timeLeftStr}</div>
+																																										                </div>
+																																														                <div class="extra-item">
+																																																		                    <div class="extra-label">Day Progress</div>
+																																																							                    <div class="extra-value">${progress.toFixed(1)}%</div>
+																																																												                </div>
+																																																																                <div class="extra-item">
+																																																																				                    <div class="extra-label">Motivation</div>
+																																																																									                    <div class="extra-emoji" id="emoji-btn">${randomEmoji}</div>
+																																																																														                </div>
+																																																																																		            `;
+
+							            document.getElementById('emoji-btn').onclick = () => {
+											                randomEmoji = emojiArr[Math.floor(Math.random()*emojiArr.length)];
+											                localStorage.setItem("status-random-emoji", randomEmoji);
+											                updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now);
+										};
+						}
+
+				        setInterval(updateTimersAndStatus, 1000);
+				        updateTimersAndStatus();
+				        updateNotesIndicators();
+
+				        // Weather HAC
+				        const WEATHER_LAT = 35.39602;
+				        const WEATHER_LON = -80.92412;
+				        const HAC_BLOCK = schedule.find(b => b.name.toLowerCase().includes("hac")) || { start: "13:07", end: "14:07" };
+
+				        async function fetchWeatherHAC() {
+							            const weatherBox = document.getElementById("weather-hac");
+							            try {
+											                const params = `latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}&hourly=precipitation_probability,precipitation&daily=precipitation_sum&forecast_days=1&timezone=auto`;
+											                const resp = await fetch("https://api.open-meteo.com/v1/forecast?" + params);
+											                const data = await resp.json();
+
+											                let [starth, startm] = HAC_BLOCK.start.split(':').map(Number);
+											                let [endh, endm] = HAC_BLOCK.end.split(':').map(Number);
+
+											                let rainDuringHac = false;
+											                let maxProb = 0;
+
+											                for(let i=0; i<data.hourly.time.length; ++i) {
+																                    const t = new Date(data.hourly.time[i]);
+																                    const hour = t.getHours();
+																                    const min = t.getMinutes();
+
+																                    const inHac = (hour > starth || (hour === starth && min >= startm)) && 
+																						                                  (hour < endh || (hour === endh && min <= endm));
+
+																                    if (inHac && (data.hourly.precipitation_probability[i] > 50 || data.hourly.precipitation[i] > 0.05)) {
+																						                        rainDuringHac = true;
+																						                        maxProb = Math.max(maxProb, data.hourly.precipitation_probability[i]);
+																					}
+															}
+
+											                if (rainDuringHac) {
+																                    weatherBox.className = 'alert-box unavailable';
+																                    weatherBox.innerHTML = `☔ Rain during HAC (${maxProb}% chance)`;
+															} else {
+																                    weatherBox.className = 'alert-box available';
+																                    weatherBox.innerHTML = '☀️ Clear weather for HAC!';
+															}
+										} catch(e) {
+											                weatherBox.className = 'alert-box info';
+											                weatherBox.innerHTML = '⚠️ Weather check unavailable';
+										}
+						}
+
+				        fetchWeatherHAC();
+			</script>
+	</body>
+</html>html>
+			</script>
+	</body>
+		</style></title>
+	</head>
