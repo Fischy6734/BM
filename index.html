@@ -69,60 +69,60 @@
 			    </style>
 	</head>
 	<body>
-		    <div class="navbar">
-				        <div class="navbar-content">
-							            <div class="navbar-brand">📚 7th Grade Schedule</div>div>
-							            <div class="navbar-time" id="navbar-time">--:-- --</div>div>
-							            <div class="navbar-actions">
-											                <button class="theme-btn" id="theme-switcher">🌙 Theme</button>button>
-											                <a class="nav-link" href="./8thGrade.html">8th Grade</a>a>
-										</div>div>
-						</div>div>
-			</div>div>
+		<div class="navbar">
+			<div class="navbar-content">
+				<div class="navbar-brand">📚 7th Grade Schedule</div>
+				<div class="navbar-time" id="navbar-time">--:-- --</div>
+				<div class="navbar-actions">
+					<button class="theme-btn" id="theme-switcher">🌙 Theme</button>
+					<a class="nav-link" href="./8thGrade.html">8th Grade</a>
+				</div>
+			</div>
+		</div>
 
-		    <div class="container">
-				        <div class="header">
-							            <h1 class="header-title">Schedule</h1>h1>
-							            <div class="progress-section">
-											                <div class="progress-label">Day Progress</div>div>
-											                <div class="progress-bar-container">
-																                    <div class="progress-bar" id="progress-bar"></div>div>
-															</div>div>
-										</div>div>
-						</div>div>
+		<div class="container">
+			<div class="header">
+				<h1 class="header-title">Schedule</h1>
+				<div class="progress-section">
+					<div class="progress-label">Day Progress</div>
+					<div class="progress-bar-container">
+						<div class="progress-bar" id="progress-bar"></div>
+					</div>
+				</div>
+			</div>
 
-				        <div class="schedule-container">
-							            <h2 class="schedule-header">Today's Blocks</h2>h2>
-							            <div id="schedule"></div>div>
-						</div>div>
+			<div class="schedule-container">
+				<h2 class="schedule-header">Today's Blocks</h2>
+				<div id="schedule"></div>
+			</div>
 
-				        <div class="status-card">
-							            <h2 class="status-title">Status</h2>h2>
-							            <div class="current-block-section" id="current-block-section">
-											                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Current Block Progress</div>div>
-											                <div class="current-block-bar">
-																                    <div class="current-block-fill" id="current-block-fill"></div>div>
-															</div>div>
-											                <div style="height: 1rem;"></div>div>
-										</div>div>
-							            <div class="status-items" id="status-blocks"></div>div>
-							            <div class="status-extras" id="status-extras"></div>div>
-						</div>div>
+			<div class="status-card">
+				<h2 class="status-title">Status</h2>
+				<div class="current-block-section" id="current-block-section">
+					<div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Current Block Progress</div>
+					<div class="current-block-bar">
+						<div class="current-block-fill" id="current-block-fill"></div>
+					</div>
+					<div style="height: 1rem;"></div>
+				</div>
+				<div class="status-items" id="status-blocks"></div>
+				<div class="status-extras" id="status-extras"></div>
+			</div>
 
-				        <div class="alert-box unavailable" id="restroom-status">🚪 Restroom: Unavailable</div>div>
-				        <div class="alert-box info" id="weather-hac">☀️ Checking weather for HAC...</div>div>
-			</div>div>
+			<div class="alert-box unavailable" id="restroom-status">🚪 Restroom: Unavailable</div>
+			<div class="alert-box info" id="weather-hac">☀️ Checking weather for HAC...</div>
+		</div>
 
-		    <div class="notes-modal-bg" id="notes-modal-bg">
-				        <div class="notes-modal">
-							            <h2 class="modal-title" id="notes-modal-title">Notes</h2>h2>
-							            <textarea class="modal-textarea" id="notes-modal-text" placeholder="Add your notes..."></textarea>
-							            <div class="modal-buttons">
-											                <button class="modal-btn close" id="close-notes-btn">Close</button>button>
-											                <button class="modal-btn save" id="save-notes-btn">Save</button>button>
-										</div>div>
-						</div>div>
-			</div>div>
+		<div class="notes-modal-bg" id="notes-modal-bg">
+			<div class="notes-modal">
+				<h2 class="modal-title" id="notes-modal-title">Notes</h2>
+				<textarea class="modal-textarea" id="notes-modal-text" placeholder="Add your notes..."></textarea>
+				<div class="modal-buttons">
+					<button class="modal-btn close" id="close-notes-btn">Close</button>
+					<button class="modal-btn save" id="save-notes-btn">Save</button>
+				</div>
+			</div>
+		</div>
 
 		    <script>
 				const schedule = [{ name: "Homeroom", start: "9:15", end: "9:55" }, { name: "Electives", start: "9:58", end: "10:58" }, { name: "3rd Block", start: "11:01", end: "12:01" }, { name: "4th Block", start: "12:04", end: "13:04" }, { name: "Lunch & HAC", start: "13:07", end: "14:07" }, { name: "5th Block", start: "14:10", end: "15:10" }, { name: "6th Block", start: "15:13", end: "16:13" }, { name: "Dismissal", start: "16:13", end: "17:00" }];
