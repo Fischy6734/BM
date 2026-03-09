@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISS Schedule</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { 
+            --primary: #f44336; 
+            --primary-dark: #d32f2f; 
+            --success: #41c65b; 
+            --bg-dark: #0f1419; 
+            --card-bg: rgba(30, 41, 59, 0.4); 
+            --text-primary: #e3e3e3; 
+            --text-secondary: #a0aec0; 
+        }
+        body { 
+            font-family: system-ui, 'Segoe UI', Arial, sans-serif; 
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a2542 50%, var(--bg-dark) 100%); 
+            color: var(--text-primary); 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+        .navbar { 
+            background: rgba(15, 20, 25, 0.5); 
+            backdrop-filter: blur(10px); 
+            padding: 1rem 2rem; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        .navbar-content { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .navbar-brand { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--primary); 
+        }
+        .navbar-time { 
+            color: var(--text-secondary); 
+            font-weight: 500; 
+        }
+        .navbar-actions { 
+            display: flex; 
+            gap: 0.8rem; 
+            align-items: center;
+        }
+        .theme-btn, .nav-link, .title-mode-btn { 
+            background: rgba(244, 67, 54, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: var(--primary); 
+            padding: 0.5rem 1rem; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.3s; 
+            font-size: 0.9rem; 
+            text-decoration: none; 
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .theme-btn:hover, .nav-link:hover, .title-mode-btn:hover { 
+            background: rgba(244, 67, 54, 0.2); 
+            transform: translateY(-1px);
+        }
+        .title-mode-btn.active {
+            background: rgba(244, 67, 54, 0.25);
+            box-shadow: 0 0 10px rgba(244, 67, 54, 0.2);
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 2rem auto; 
+            padding: 0 1.5rem; 
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 3rem; 
+        }
+        .header-title { 
+            font-size: 3.5rem; 
+            font-weight: 800; 
+            background: linear-gradient(135deg, var(--primary) 0%, #ff8a80 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            margin-bottom: 0.5rem; 
+        }
+        .countdown-section {
+            background: var(--card-bg);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(244, 67, 54, 0.1);
+        }
+        .countdown-title {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .countdown-time {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 20px rgba(244, 67, 54, 0.3);
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+        .countdown-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .progress-section { 
+            margin-bottom: 2rem; 
+        }
+        .progress-label { 
+            font-size: 0.9rem; 
+            color: var(--text-secondary); 
+            margin-bottom: 0.5rem; 
+            font-weight: 600; 
+        }
+        .progress-bar-container { 
+            width: 100%; 
+            height: 12px; 
+            background: var(--card-bg); 
+            border-radius: 100px; 
+            overflow: hidden; 
+            border: 1px solid rgba(148, 163, 184, 0.2); 
+        }
+        .progress-bar { 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--primary) 0%, #ff8a80 100%); 
+            border-radius: 100px; 
+            transition: width 0.5s; 
+        }
+        .schedule-container { 
+            display: grid; 
+            gap: 0.8rem; 
+            margin-bottom: 3rem; 
+        }
+        .schedule-header { 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            color: var(--primary); 
+            margin-bottom: 1rem; 
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .schedule-header::before {
+            content: "📋";
+            font-size: 1.5rem;
+        }
+        .block { 
+            background: var(--card-bg); 
+            border: 1px solid rgba(244, 67, 54, 0.2); 
+            border-radius: 12px; 
+            padding: 1.2rem 1.5rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            transition: all 0.3s; 
+            position: relative;
+            overflow: hidden;
+        }
+        .block::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .block.current::before {
+            opacity: 1;
+            box-shadow: 0 0 10px var(--primary);
+        }
+        .block:hover { 
+            background: rgba(244, 67, 54, 0.1); 
+            border-color: var(--primary); 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.15);
+        }
+        .block.current {
+            background: rgba(244, 67, 54, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 4px 16px rgba(244, 67, 54, 0.2);
+        }
+        .block.past {
+            opacity: 0.6;
+        }
+        .block-left { 
+            flex: 1; 
+        }
+        .block-name { 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            margin-bottom: 0.3rem; 
+        }
+        .block-time { 
+            font-size: 0.95rem; 
+            color: var(--text-secondary); 
+            font-weight: 500; 
+        }
+        .status-card { 
+            background: var(--card-bg); 
+            border: 1px solid rgba(244, 67, 54, 0.2); 
+            border-radius: 12px; 
+            padding: 2rem; 
+            margin-bottom: 2rem; 
+        }
+        .status-title { 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            color: var(--primary); 
+            margin-bottom: 1.5rem; 
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .status-title::before {
+            content: "📊";
+            font-size: 1.5rem;
+        }
+        .current-block-section { 
+            display: none; 
+            margin-bottom: 1.5rem; 
+        }
+        .current-block-section.active { 
+            display: block; 
+        }
+        .current-block-bar { 
+            height: 16px; 
+            background: var(--card-bg); 
+            border-radius: 100px; 
+            overflow: hidden; 
+            border: 1px solid rgba(244, 67, 54, 0.2); 
+        }
+        .current-block-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--success) 0%, #ff8a80 100%); 
+            border-radius: 100px; 
+            transition: width 0.5s; 
+        }
+        .status-items { 
+            display: grid; 
+            gap: 0.8rem; 
+            margin-bottom: 1.5rem; 
+        }
+        .status-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+            padding: 0.8rem; 
+            background: rgba(244, 67, 54, 0.05); 
+            border-radius: 8px; 
+            border: 1px solid rgba(244, 67, 54, 0.1); 
+        }
+        .status-dot { 
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%; 
+            flex-shrink: 0; 
+            border: 2px solid var(--text-secondary); 
+        }
+        .status-dot.green { 
+            background: var(--success); 
+            border-color: var(--success); 
+            box-shadow: 0 0 8px rgba(65, 198, 91, 0.4);
+        }
+        .status-dot.orange { 
+            background: #f5a623; 
+            border-color: #f5a623; 
+        }
+        .status-dot.red { 
+            background: var(--danger); 
+            border-color: var(--danger); 
+        }
+        .status-text { 
+            font-weight: 500; 
+            color: var(--text-primary); 
+        }
+        .status-extras { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 1rem; 
+        }
+        .extra-item { 
+            background: rgba(244, 67, 54, 0.1); 
+            border: 1px solid rgba(244, 67, 54, 0.2); 
+            border-radius: 10px; 
+            padding: 1.2rem; 
+            text-align: center; 
+        }
+        .extra-label { 
+            font-size: 0.85rem; 
+            color: var(--text-secondary); 
+            font-weight: 600; 
+            margin-bottom: 0.5rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+        }
+        .extra-value { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            color: var(--primary); 
+        }
+        .extra-emoji { 
+            font-size: 2rem; 
+            margin-top: 0.5rem; 
+            cursor: pointer; 
+            transition: transform 0.2s;
+        }
+        .extra-emoji:hover {
+            transform: scale(1.2);
+        }
+        @media (max-width: 768px) { 
+            .header-title { 
+                font-size: 2.5rem; 
+            } 
+            .block { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 0.5rem;
+            } 
+            .countdown-time {
+                font-size: 2.5rem;
+            }
+            .navbar-content {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .navbar-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-brand">ISS</div>
+            <div class="navbar-time" id="navbar-time">--:-- --</div>
+            <div class="navbar-actions">
+                <button class="title-mode-btn active" id="dismissal-mode-btn" title="Show time until 4:13 PM in browser tab">
+                    ⏰ Dismissal
+                </button>
+                <button class="title-mode-btn" id="block-mode-btn" title="Show time until next block in browser tab">
+                    📚 Next Block
+                </button>
+                <button class="theme-btn" id="theme-switcher">🌙 Theme</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="header-title">ISS Schedule</h1>
+            <div class="progress-section">
+                <div class="progress-label">Day Progress</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="countdown-section">
+            <div class="countdown-title">Time Until Dismissal (4:13 PM)</div>
+            <div class="countdown-time" id="countdown-413">--:--:--</div>
+            <div class="countdown-label">Browser tab shows: <span id="title-mode-display">Dismissal</span> countdown</div>
+        </div>
+
+        <div class="schedule-container">
+            <h2 class="schedule-header">Today's Blocks</h2>
+            <div id="schedule"></div>
+        </div>
+
+        <div class="status-card">
+            <h2 class="status-title">Status</h2>
+            <div class="current-block-section" id="current-block-section">
+                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">Current Block Progress</div>
+                <div class="current-block-bar">
+                    <div class="current-block-fill" id="current-block-fill"></div>
+                </div>
+                <div style="height: 1rem;"></div>
+            </div>
+            <div class="status-items" id="status-blocks"></div>
+            <div class="status-extras" id="status-extras"></div>
+        </div>
+    </div>
+
+    <script>
+        // ISS Schedule with your exact times
+        const schedule = [
+            { name: "ISS", start: "9:15", end: "9:45" },
+            { name: "First Bathroom Break", start: "9:45", end: "11:00" },
+            { name: "Work Silently", start: "11:01", end: "11:35" },
+            { name: "Lunch", start: "11:35", end: "12:00" },
+            { name: "2nd Bathroom Break", start: "12:00", end: "12:30" },
+            { name: "Group", start: "12:40", end: "15:15" },
+            { name: "Work Silently", start: "15:15", end: "15:20" },
+            { name: "Last Bathroom Break", start: "15:20", end: "16:10" },
+            { name: "Work Silently", start: "16:15", end: "17:00" }
+        ];
+
+        const encouragements = [
+            "You got this! 🚀", 
+            "Keep up the great work! 💪", 
+            "You're making awesome progress! 🌟", 
+            "Stay positive and keep learning! 😎", 
+            "Take a deep breath and crush it! 🐉", 
+            "High five, you're doing great! 🙌", 
+            "Almost there! Keep going! 🏁", 
+            "Wow! You're on fire today! 🔥", 
+            "Proud of you! 🎉", 
+            "You are unstoppable! 🦸‍♂️"
+        ];
+        const emojiArr = ["😃","💪","🚀","🤩","😎","🌈","🔥","🎯","🍀","🦄","🌟","🏆"];
+
+        // Short block names for title bar (max 12 chars)
+        const shortBlockNames = {
+            "ISS": "ISS",
+            "First Bathroom Break": "Bath 1",
+            "Work Silently": "Work",
+            "Lunch": "Lunch",
+            "2nd Bathroom Break": "Bath 2",
+            "Group": "Group",
+            "Last Bathroom Break": "Bath 3"
+        };
+
+        function getShortBlockName(name) {
+            return shortBlockNames[name] || name.substring(0, 12);
+        }
+
+        function to12h(time) { 
+            let [h, m] = time.split(":").map(Number); 
+            let ampm = h >= 12 ? "PM" : "AM"; 
+            let h12 = h % 12 || 12; 
+            return `${h12}:${String(m).padStart(2,"0")} ${ampm}`; 
+        }
+        
+        function timeToSeconds(time) { 
+            const [hours, minutes] = time.split(":").map(Number); 
+            return hours * 3600 + minutes * 60; 
+        }
+        
+        function formatTime(secs) { 
+            if (secs <= 0) return "0m 00s"; 
+            const m = Math.floor(secs / 60); 
+            const s = secs % 60; 
+            return `${m}m ${String(s).padStart(2, "0")}s`; 
+        }
+        
+        function getDayProgressPercent(nowSecs) { 
+            const start = timeToSeconds(schedule[0].start); 
+            const end = timeToSeconds(schedule[schedule.length-1].end); 
+            if (nowSecs <= start) return 0; 
+            if (nowSecs >= end) return 100; 
+            return ((nowSecs - start) / (end - start)) * 100; 
+        }
+
+        // Get current schedule state
+        function getScheduleState(nowSeconds) {
+            let currentBlock = null;
+            let currentBlockIndex = -1;
+            let nextBlock = null;
+            let timeLeft = 0;
+            let inBlock = false;
+
+            for (let i = 0; i < schedule.length; i++) {
+                const block = schedule[i];
+                const start = timeToSeconds(block.start);
+                const end = timeToSeconds(block.end);
+
+                if (nowSeconds >= start && nowSeconds < end) {
+                    currentBlock = block;
+                    currentBlockIndex = i;
+                    timeLeft = end - nowSeconds;
+                    inBlock = true;
+                } else if (nowSeconds < start && nextBlock === null) {
+                    nextBlock = block;
+                    timeLeft = start - nowSeconds;
+                }
+            }
+
+            return { currentBlock, currentBlockIndex, nextBlock, timeLeft, inBlock };
+        }
+
+        // Countdown to 4:13 PM (16:13)
+        function getDismissalCountdown() {
+            const now = new Date();
+            const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            const targetSeconds = 16 * 3600 + 13 * 60; // 4:13 PM = 16:13
+            return Math.max(0, targetSeconds - currentSeconds);
+        }
+
+        // Update browser tab title
+        function updateDocumentTitle() {
+            const now = new Date();
+            const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            const scheduleState = getScheduleState(currentSeconds);
+            const titleMode = localStorage.getItem('title-mode') || 'dismissal';
+            
+            let titleText = "ISS - ";
+            
+            if (titleMode === 'dismissal') {
+                const dismissalTime = getDismissalCountdown();
+                if (dismissalTime <= 0) {
+                    titleText += "Dismissed! 🎉";
+                } else {
+                    titleText += `${formatTime(dismissalTime)} until 4:13 PM`;
+                }
+            } else {
+                // Block mode
+                if (scheduleState.inBlock) {
+                    titleText += `${formatTime(scheduleState.timeLeft)} left in ${getShortBlockName(scheduleState.currentBlock.name)}`;
+                } else if (scheduleState.nextBlock) {
+                    titleText += `${formatTime(scheduleState.timeLeft)} until ${getShortBlockName(scheduleState.nextBlock.name)}`;
+                } else {
+                    titleText += "Day ended";
+                }
+            }
+            
+            // Add current time
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            document.title = `${titleText} | ${timeStr}`;
+        }
+
+        const themeSwitcher = document.getElementById('theme-switcher');
+        themeSwitcher.onclick = () => { 
+            document.body.classList.toggle('light'); 
+            if (document.body.classList.contains('light')) { 
+                themeSwitcher.innerHTML = '☀️ Theme'; 
+                localStorage.setItem('bm-theme', 'light'); 
+            } else { 
+                themeSwitcher.innerHTML = '🌙 Theme'; 
+                localStorage.setItem('bm-theme', 'dark'); 
+            } 
+        };
+        
+        (function() { 
+            const theme = localStorage.getItem('bm-theme'); 
+            if (theme === 'light') { 
+                document.body.classList.add('light'); 
+                themeSwitcher.innerHTML = '☀️ Theme'; 
+            } 
+        })();
+
+        // Title mode toggle functionality
+        const dismissalModeBtn = document.getElementById('dismissal-mode-btn');
+        const blockModeBtn = document.getElementById('block-mode-btn');
+        const titleModeDisplay = document.getElementById('title-mode-display');
+        
+        let titleMode = localStorage.getItem('title-mode') || 'dismissal';
+        
+        function updateTitleModeButtons() {
+            if (titleMode === 'dismissal') {
+                dismissalModeBtn.classList.add('active');
+                blockModeBtn.classList.remove('active');
+                titleModeDisplay.textContent = "Dismissal (4:13 PM)";
+            } else {
+                blockModeBtn.classList.add('active');
+                dismissalModeBtn.classList.remove('active');
+                titleModeDisplay.textContent = "Next Block";
+            }
+        }
+        
+        dismissalModeBtn.onclick = () => {
+            titleMode = 'dismissal';
+            localStorage.setItem('title-mode', titleMode);
+            updateTitleModeButtons();
+            updateDocumentTitle();
+        };
+        
+        blockModeBtn.onclick = () => {
+            titleMode = 'block';
+            localStorage.setItem('title-mode', titleMode);
+            updateTitleModeButtons();
+            updateDocumentTitle();
+        };
+        
+        updateTitleModeButtons();
+
+        const scheduleDiv = document.getElementById("schedule");
+        const scheduleBlocks = [];
+        
+        schedule.forEach((block, index) => { 
+            const blockDiv = document.createElement("div"); 
+            blockDiv.classList.add("block");
+            blockDiv.setAttribute('data-index', index);
+            blockDiv.innerHTML = `
+                <div class="block-left">
+                    <div class="block-name">${block.name}</div>
+                    <div class="block-time">${to12h(block.start)} - ${to12h(block.end)}</div>
+                </div>
+            `; 
+            scheduleDiv.appendChild(blockDiv);
+            scheduleBlocks.push(blockDiv);
+        });
+
+        let prevBlockIndex = -1;
+        function updateTimersAndStatus() {
+            const now = new Date();
+            const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            
+            // Get schedule state
+            const scheduleState = getScheduleState(currentSeconds);
+            
+            // Update progress bar
+            document.getElementById('progress-bar').style.width = getDayProgressPercent(currentSeconds) + '%';
+            
+            // Update countdown display (always shows dismissal countdown)
+            const dismissalTime = getDismissalCountdown();
+            let countdownText;
+            if (dismissalTime <= 0) {
+                countdownText = "00:00:00";
+                document.getElementById('countdown-413').style.color = "var(--success)";
+            } else {
+                const hours = Math.floor(dismissalTime / 3600);
+                const minutes = Math.floor((dismissalTime % 3600) / 60);
+                const seconds = dismissalTime % 60;
+                countdownText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+            document.getElementById('countdown-413').textContent = countdownText;
+            
+            let currentBlock = scheduleState.currentBlock;
+            let currentBlockIndex = scheduleState.currentBlockIndex;
+            let blockStart = null, blockEnd = null;
+            let timeLeft = scheduleState.timeLeft;
+            
+            const statusDiv = document.getElementById('status-blocks');
+            statusDiv.innerHTML = '';
+            
+            schedule.forEach((block, index) => {
+                const start = timeToSeconds(block.start);
+                const end = timeToSeconds(block.end);
+                let dotClass = 'orange';
+                let blockClass = 'future';
+                
+                if (currentSeconds >= start && currentSeconds < end) {
+                    dotClass = 'green';
+                    blockClass = 'current';
+                    blockStart = start;
+                    blockEnd = end;
+                } else if (currentSeconds >= end) {
+                    dotClass = 'red';
+                    blockClass = 'past';
+                }
+                
+                // Update schedule block class
+                const blockDiv = scheduleBlocks[index];
+                blockDiv.classList.remove('current', 'past', 'future');
+                blockDiv.classList.add(blockClass);
+                
+                const statusItem = document.createElement('div');
+                statusItem.classList.add('status-item');
+                statusItem.innerHTML = `
+                    <span class="status-dot ${dotClass}"></span>
+                    <span class="status-text">${block.name}</span>
+                `;
+                statusDiv.appendChild(statusItem);
+            });
+            
+            const currentBlockSection = document.getElementById('current-block-section');
+            if (currentBlock && blockStart !== null && blockEnd !== null && blockEnd > blockStart) {
+                const total = blockEnd - blockStart;
+                const elapsed = currentSeconds - blockStart;
+                const percent = Math.max(0, Math.min(100, (elapsed / total) * 100));
+                document.getElementById('current-block-fill').style.width = percent + '%';
+                currentBlockSection.classList.add('active');
+            } else {
+                currentBlockSection.classList.remove('active');
+            }
+            
+            if (prevBlockIndex !== -1 && prevBlockIndex !== currentBlockIndex && currentBlock) {
+                const eDiv = document.querySelector('.header');
+                eDiv.innerHTML += `<div style="color: var(--primary); font-weight: 600; margin-top: 0.5rem; animation: fadeIn 0.5s;">${encouragements[Math.floor(Math.random() * encouragements.length)]}</div>`;
+            }
+            prevBlockIndex = currentBlockIndex;
+            
+            updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now);
+            
+            // Update document title
+            updateDocumentTitle();
+        }
+
+        function updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now) {
+            const extras = document.getElementById('status-extras');
+            let timeLeftStr = currentBlock ? (timeLeft > 0 ? `${Math.floor(timeLeft/3600)}h ${Math.floor((timeLeft%3600)/60)}m ${String(timeLeft%60).padStart(2,"0")}s` : 'Done') : 'N/A';
+            const totalSecs = timeToSeconds(schedule[schedule.length-1].end) - timeToSeconds(schedule[0].start);
+            const nowSecs = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+            let progress = (nowSecs - timeToSeconds(schedule[0].start)) / totalSecs * 100;
+            progress = Math.max(0, Math.min(100, progress));
+            let randomEmoji = localStorage.getItem("status-random-emoji") || emojiArr[0];
+            
+            extras.innerHTML = `
+                <div class="extra-item">
+                    <div class="extra-label">Current Block</div>
+                    <div class="extra-value" style="font-size: 1.4rem;">${currentBlock ? currentBlock.name : 'None'}</div>
+                </div>
+                <div class="extra-item">
+                    <div class="extra-label">Time Left</div>
+                    <div class="extra-value" style="font-size: 1.4rem;">${timeLeftStr}</div>
+                </div>
+                <div class="extra-item">
+                    <div class="extra-label">Day Progress</div>
+                    <div class="extra-value">${progress.toFixed(1)}%</div>
+                </div>
+                <div class="extra-item">
+                    <div class="extra-label">Motivation</div>
+                    <div class="extra-emoji" id="emoji-btn" style="cursor: pointer;">${randomEmoji}</div>
+                </div>
+            `;
+            
+            document.getElementById('emoji-btn').onclick = () => { 
+                randomEmoji = emojiArr[Math.floor(Math.random()*emojiArr.length)]; 
+                localStorage.setItem("status-random-emoji", randomEmoji); 
+                updateStatusExtras(currentBlock, currentBlockIndex, timeLeft, now); 
+            };
+        }
+
+        // Update navbar time
+        function updateNavbarTime() { 
+            const now = new Date(); 
+            const h = String(now.getHours()).padStart(2, '0'); 
+            const m = String(now.getMinutes()).padStart(2, '0'); 
+            const ampm = now.getHours() >= 12 ? 'PM' : 'AM'; 
+            document.getElementById('navbar-time').textContent = `${h}:${m} ${ampm}`; 
+        }
+
+        // Add CSS animation for encouragement fade-in
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize everything
+        setInterval(updateNavbarTime, 1000);
+        updateNavbarTime();
+        setInterval(updateTimersAndStatus, 1000);
+        updateTimersAndStatus();
+    </script>
+</body>
+</html>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/682b83f8de0d8619101f1d8d/1irkvn0r0';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
