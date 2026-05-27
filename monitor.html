@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BM Live Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .main-stat {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .main-stat .label {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .main-stat .value {
+            font-size: 4em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .live-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+            50% { 
+                box-shadow: 0 0 0 15px rgba(76, 175, 80, 0);
+            }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .value {
+            color: #667eea;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .chart-section {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .chart-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .hourly-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 150px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .bar {
+            flex: 1;
+            min-width: 8px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+        }
+        
+        .bar-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            margin-bottom: 5px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .bar:hover .bar-tooltip {
+            opacity: 1;
+        }
+        
+        .info-section {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            color: #2e7d32;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #c62828;
+        }
+        
+        .refresh-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #999;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .main-stat {
+                padding: 30px 20px;
+            }
+            
+            .main-stat .value {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 BM Live Monitor</h1>
+            <p>Real-time Website Visitor Tracking</p>
+        </div>
+        
+        <div id="content">
+            <div class="loading">Loading live data...</div>
+        </div>
+    </div>
+
+    <script>
+        const REPO_OWNER = 'Fischy6734';
+        const REPO_NAME = 'BM';
+        const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/visitor-data.json`;
+
+        async function pingVisitor() {
+            try {
+                const sessionId = localStorage.getItem('bm_session_id') || 
+                                 (localStorage.setItem('bm_session_id', Date.now() + Math.random()), 
+                                  localStorage.getItem('bm_session_id'));
+                console.log('Session active:', sessionId);
+            } catch (e) {
+                console.log('Local tracking');
+            }
+        }
+
+        async function fetchVisitorData() {
+            try {
+                const response = await fetch(RAW_URL + '?t=' + Date.now());
+                if (!response.ok) throw new Error('Failed to fetch data');
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                return null;
+            }
+        }
+
+        function renderChart(hourlyData) {
+            if (!hourlyData || !Array.isArray(hourlyData)) return '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayData = hourlyData.find(d => d.date === today);
+            
+            if (!todayData || !todayData.hours) return '<p>No data yet</p>';
+            
+            const maxVal = Math.max(...todayData.hours);
+            const now = new Date();
+            
+            return todayData.hours.map((val, hour) => {
+                const height = maxVal > 0 ? (val / maxVal) * 100 : 0;
+                const timeStr = hour.toString().padStart(2, '0') + ':00';
+                return `
+                    <div class="bar" style="height: ${height}%">
+                        <div class="bar-tooltip">${timeStr}<br>${val} visits</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function updateDashboard() {
+            const contentDiv = document.getElementById('content');
+            const data = await fetchVisitorData();
+            
+            if (!data) {
+                contentDiv.innerHTML = `
+                    <div class="error">Unable to load visitor data. Please check back later.</div>
+                `;
+                return;
+            }
+
+            const currentVisitors = data.current_visitors || 0;
+            const totalVisits = data.total_visits || 0;
+            const peakVisitors = data.peak_visitors || 0;
+
+            const html = `
+                <div class="main-stat">
+                    <div class="label">Current Visitors</div>
+                    <div class="value">
+                        <span class="live-indicator"></span>
+                        <span>${currentVisitors}</span>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="label">Total Visits</div>
+                        <div class="value">${totalVisits.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Peak Visitors</div>
+                        <div class="value">${peakVisitors}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Last Updated</div>
+                        <div class="value">${new Date(data.last_updated).toLocaleTimeString()}</div>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <h2>Today's Activity</h2>
+                    <div class="hourly-chart">
+                        ${renderChart(data.hourly_data)}
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <strong>ℹ️ How it works:</strong> Visitor count updates automatically when someone accesses your website. Data is stored directly in your GitHub repository and refreshed every hour.
+                </div>
+
+                <div class="refresh-info">
+                    Refreshing every 5 seconds... | Last fetch: ${new Date().toLocaleTimeString()}
+                </div>
+            `;
+            
+            contentDiv.innerHTML = html;
+        }
+
+        updateDashboard();
+        pingVisitor();
+        setInterval(updateDashboard, 5000);
+    </script>
+</body>
+</html>
